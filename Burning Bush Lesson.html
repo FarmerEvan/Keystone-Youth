@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Keystone Youth Group - Out of Egypt</title>
+    <style>
+        /* Base Mini-Website & Print Styles */
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #5c5c5c;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Each page represents one side of an 11x8.5 piece of paper */
+        .page {
+            width: 11in;
+            height: 8.5in;
+            background-color: #fcf9f2; /* Sand/Desert color */
+            display: flex;
+            margin: 20px 0;
+            box-shadow: 0 0 15px rgba(0,0,0,0.5);
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        /* The 3 columns of the tri-fold */
+        .panel {
+            width: 33.333%;
+            height: 100%;
+            padding: 0.4in;
+            box-sizing: border-box;
+            border-right: 1px dashed #ccc; /* Fold lines */
+            display: flex;
+            flex-direction: column;
+        }
+        .panel:last-child {
+            border-right: none;
+        }
+
+        /* Typography and Colors */
+        h1, h2, h3 {
+            color: #8c2100; /* Deep red/orange */
+            margin-top: 0;
+        }
+        h1 {
+            font-size: 28px;
+            text-align: center;
+            text-transform: uppercase;
+        }
+        h2 {
+            font-size: 20px;
+            border-bottom: 2px solid #e07a00;
+            padding-bottom: 5px;
+        }
+        h3 {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        p, ul, li {
+            font-size: 14px;
+            color: #333;
+            line-height: 1.5;
+        }
+        .highlight-box {
+            background-color: #ffecd1;
+            border-left: 4px solid #e07a00;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+
+        /* Front Cover Specifics */
+        .cover {
+            text-align: center;
+            background-color: #2b1f1c;
+            color: #fff;
+            justify-content: center;
+        }
+        .cover h1, .cover h2, .cover h3, .cover p {
+            color: #fff;
+            border: none;
+        }
+        .cover h2 {
+            color: #ff9100;
+        }
+        canvas {
+            background-color: #2b1f1c;
+            margin: 20px auto;
+            border-radius: 50%;
+            box-shadow: 0 0 20px #ff5100;
+        }
+
+        /* Print Settings to make it fit perfectly on paper */
+        @media print {
+            body {
+                background-color: #fff;
+                margin: 0;
+            }
+            .page {
+                margin: 0;
+                box-shadow: none;
+                page-break-after: always;
+            }
+            .panel {
+                border-right: none; /* Hide dashed fold lines on actual print */
+            }
+            @page {
+                size: landscape;
+                margin: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="page">
+        
+        <div class="panel">
+            <h2>Keep Your Skills Sharp!</h2>
+            <p>Use the tools we learned last month on this week's passage (Exodus 3).</p>
+            
+            <div class="highlight-box">
+                <h3>The Theme:</h3>
+                <p>God hears His people and provides a rescuer.</p>
+            </div>
+            
+            <div class="highlight-box">
+                <h3>Teaching about Christ:</h3>
+                <p>Jesus is the ultimate "I AM" who rescues us from sin.</p>
+            </div>
+            
+            <div class="highlight-box">
+                <h3>The Promise to Claim:</h3>
+                <p>Look at Exodus 3:12. God tells Moses, <strong>"I will be with you."</strong> Write this promise down and put it in your backpack or somewhere you see it often!</p>
+            </div>
+
+            <div class="highlight-box">
+                <h3>Memorize the Promise:</h3>
+                <p></p>
+            </div>
+        </div>
+
+        <div class="panel">
+            <h2>Next Week!</h2>
+            <p><strong>Date:</strong> April 19th, 2026</p>
+            <p><strong>Topic:</strong> The Plagues and the Passover (Exodus 7-12)</p>
+            <p><strong>Bring:</strong> Your Bible, a friend, and yourself!</p>
+            <br><br><br>
+            <h2>Contact Us</h2>
+            <p><strong>Youth Pastor:</strong> Evan Brandsma</p>
+            <p><strong>Email:</strong> evanbrandsma@gmail.com</p>
+            <p><strong>Meeting Time:</strong> Sundays @ 5-7 PM</p>
+        </div>
+
+        <div class="panel cover">
+            <h3>The Grand Story:</h3>
+            <h1>Out of Egypt</h1>
+            <canvas id="bushCanvas" width="200" height="200"></canvas>
+            <h2>Discovering the Great "I AM"</h2>
+            <p>Youth Group Weekly Take-Home<br>Covering: Exodus 1-3</p>
+        </div>
+
+    </div>
+
+    <div class="page">
+        
+        <div class="panel">
+            <h2>Where Are We?</h2>
+            <p>After a 400-year gap between Genesis and Exodus, the Israelites went from being honored guests in Egypt to suffering slaves. They cried out, and God heard them!</p>
+            
+            <h2>The Burning Bush</h2>
+            <p>God called a runaway shepherd named Moses from a bush that was on fire but wouldn't burn up. When Moses asked God for His name, God said: <strong>"I AM WHO I AM."</strong></p>
+            <ul>
+                <li>He is eternal.</li>
+                <li>He needs nothing from anyone else.</li>
+                <li>He is the Promise-Keeper.</li>
+            </ul>
+
+            <h2>The Jesus Connection</h2>
+            <p>In John 8:58, Jesus shocked the leaders by saying, <em>"Before Abraham was born, I AM!"</em> Jesus was claiming the name of God from the burning bush. Moses rescued people from physical slavery; Jesus rescues us from spiritual slavery!</p>
+        </div>
+
+        <div class="panel">
+            <h2>Mid-Week Dive Deep</h2>
+            <p><em>Grab a parent, a sibling, or just your Bible and a notebook, and take 10 minutes to work through this!</em></p>
+            
+            <div class="highlight-box">
+                <p><strong>1. READ IT:</strong> Read Exodus 3:13-15 together.</p>
+            </div>
+            
+            <h3>For Younger Kids:</h3>
+            <p>Imagine walking in the desert and seeing a talking, burning bush. What is the first thing you would do? Why did God use something so wild to get Moses' attention?</p>
+            
+            <h3>For Older Youth:</h3>
+            <p>Moses was terrified and full of excuses. Have you ever felt like God was asking you to do something too hard or scary? How does knowing God is the great "I AM" help you overcome that fear?</p>
+        </div>
+
+        <div class="panel">
+            <h2>Weekly Action Steps</h2>
+            <p><strong>Choose your challenge for the week:</strong></p>
+
+            <div class="highlight-box">
+                <h3>The "Silent Gap" Challenge</h3>
+                <p>The Israelites waited 400 years for rescue. Is there something you've been praying for that feels ignored? Write it on a sticky note for your mirror. Every time you see it, say: <em>"God has not forgotten me."</em></p>
+            </div>
+
+            <div class="highlight-box">
+                <h3>The "I AM" Walk</h3>
+                <p>Go for a 10-minute walk. As you walk, thank God for who He is. <em>(Example: "God, thank you that You are strong. Thank you that You are always with me.")</em></p>
+            </div>
+
+            <div class="highlight-box">
+                <h3>The Jesus Connection</h3>
+                <p>Read John 8:12. Jesus says, "I am the light of the world." Pick one specific way to show God's love and be a light to someone else at school this week.</p>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const canvas = document.getElementById('bushCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Draw Flames
+        ctx.fillStyle = '#ff3300';
+        ctx.beginPath();
+        ctx.moveTo(100, 20);
+        ctx.quadraticCurveTo(50, 100, 70, 150);
+        ctx.lineTo(130, 150);
+        ctx.quadraticCurveTo(150, 100, 100, 20);
+        ctx.fill();
+
+        ctx.fillStyle = '#ff9900';
+        ctx.beginPath();
+        ctx.moveTo(100, 50);
+        ctx.quadraticCurveTo(70, 120, 85, 150);
+        ctx.lineTo(115, 150);
+        ctx.quadraticCurveTo(130, 120, 100, 50);
+        ctx.fill();
+
+        ctx.fillStyle = '#ffff00';
+        ctx.beginPath();
+        ctx.moveTo(100, 80);
+        ctx.quadraticCurveTo(85, 130, 95, 150);
+        ctx.lineTo(105, 150);
+        ctx.quadraticCurveTo(115, 130, 100, 80);
+        ctx.fill();
+
+        // Draw Bush Branches
+        ctx.strokeStyle = '#3d2314';
+        ctx.lineWidth = 4;
+        ctx.lineCap = 'round';
+        
+        const drawBranch = (x1, y1, x2, y2) => {
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.stroke();
+        };
+
+        // Main trunk and branches
+        drawBranch(100, 180, 100, 140);
+        drawBranch(100, 140, 70, 100);
+        drawBranch(100, 140, 130, 110);
+        drawBranch(80, 115, 60, 130);
+        drawBranch(115, 125, 140, 140);
+        drawBranch(100, 180, 85, 150);
+        drawBranch(100, 180, 115, 160);
+    </script>
+</body>
+</html>
