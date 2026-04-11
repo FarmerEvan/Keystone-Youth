@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome | Keystone Youth</title>
+    <style>
+        /* Base Styles & Background */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            text-align: center;
+            padding: 2rem;
+            max-width: 800px;
+            width: 100%;
+        }
+
+        /* Typography */
+        h1 {
+            font-size: 3.5rem;
+            margin: 0;
+            color: #fb923c; /* Vibrant Orange */
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        p.subtitle {
+            font-size: 1.2rem;
+            color: #94a3b8;
+            margin-bottom: 3rem;
+        }
+
+        /* Cards/Buttons Container */
+        .paths {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* Individual Card Styles */
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 2.5rem 2rem;
+            width: 280px;
+            text-decoration: none;
+            color: white;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        }
+
+        /* Leader Card Specifics */
+        .card.leader:hover {
+            border-color: #38bdf8; /* Blue accent */
+            background: rgba(56, 189, 248, 0.1);
+        }
+
+        /* Student Card Specifics */
+        .card.student:hover {
+            border-color: #fb923c; /* Orange accent */
+            background: rgba(251, 146, 60, 0.1);
+        }
+
+        .card h2 {
+            margin: 0 0 10px 0;
+            font-size: 1.8rem;
+        }
+
+        .card p {
+            margin: 0;
+            color: #cbd5e1;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        /* Simple Icons using Emoji for now */
+        .icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 600px) {
+            h1 { font-size: 2.5rem; }
+            .paths { flex-direction: column; align-items: center; }
+            .card { width: 100%; max-width: 300px; box-sizing: border-box; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Keystone Youth</h1>
+        <p class="subtitle">Welcome! Select your path below to get started.</p>
+
+        <div class="paths">
+            <a href="leader.html" class="card leader">
+                <div class="icon">🧭</div>
+                <h2>I am a Leader</h2>
+                <p>Access weekly lesson plans, discussion guides, and teaching tools.</p>
+            </a>
+
+            <a href="student.html" class="card student">
+                <div class="icon">🔥</div>
+                <h2>I am a Student</h2>
+                <p>Find weekly brochures, Bible study challenges, and event info.</p>
+            </a>
+
+            <a href="parent.html" class="card parent">
+                <div class="icon">👨‍👧</div>
+                <h2>I am a Parent</h2>
+                <p>Find Bible study challenges, serving opportunities, and event info.</p>
+            </a>
+
+            <a href="helper.html" class="card helper">
+                <div class="icon">👨‍👧</div>
+                <h2>I am a Helper</h2>
+                <p>Find serving opportunities, ways to bless the ministry, and event info.</p>
+            </a>
+        </div>
+    </div>
+
+</body>
+</html>
