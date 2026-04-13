@@ -37,7 +37,20 @@
             font-size: 1.2rem;
             color: #94a3b8;
             margin-bottom: 3rem;
+            min-height: 28px; /* Keeps layout from jumping when text changes */
         }
+
+        /* Navigation / Back Button */
+        .back-btn {
+            display: inline-block;
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 1rem;
+            margin-bottom: 2rem;
+            transition: color 0.3s ease;
+            cursor: pointer;
+        }
+        .back-btn:hover { color: #ffffff; }
 
         /* Cards/Buttons Container */
         .paths {
@@ -45,6 +58,12 @@
             gap: 2rem;
             justify-content: center;
             flex-wrap: wrap;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         /* Individual Card Styles */
@@ -61,6 +80,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            cursor: pointer;
         }
 
         .card:hover {
@@ -68,17 +88,14 @@
             box-shadow: 0 10px 25px rgba(0,0,0,0.5);
         }
 
-        /* Leader Card Specifics */
-        .card.leader:hover {
-            border-color: #38bdf8; /* Blue accent */
-            background: rgba(56, 189, 248, 0.1);
-        }
-
-        /* Student Card Specifics */
-        .card.student:hover {
-            border-color: #fb923c; /* Orange accent */
-            background: rgba(251, 146, 60, 0.1);
-        }
+        /* Specific Card Hover Colors */
+        .card.study:hover { border-color: #facc15; background: rgba(250, 204, 21, 0.1); } /* Yellow */
+        .card.info:hover { border-color: #a855f7; background: rgba(168, 85, 247, 0.1); } /* Purple */
+        
+        .card.leader:hover { border-color: #38bdf8; background: rgba(56, 189, 248, 0.1); } /* Blue */
+        .card.student:hover { border-color: #fb923c; background: rgba(251, 146, 60, 0.1); } /* Orange */
+        .card.parent:hover { border-color: #10b981; background: rgba(16, 185, 129, 0.1); } /* Green */
+        .card.helper:hover { border-color: #a855f7; background: rgba(168, 85, 247, 0.1); } /* Purple */
 
         .card h2 {
             margin: 0 0 10px 0;
@@ -92,7 +109,7 @@
             line-height: 1.5;
         }
 
-        /* Simple Icons using Emoji for now */
+        /* Icons */
         .icon {
             font-size: 3rem;
             margin-bottom: 1rem;
@@ -107,37 +124,76 @@
     </style>
 </head>
 <body>
-
+    <div style="position: absolute; top: 20px; right: 30px;">
+        <a href="about.html" style="color: #94a3b8; text-decoration: none; font-weight: bold; font-size: 1rem; transition: color 0.3s;" onmouseover="this.style.color='#fb923c'" onmouseout="this.style.color='#94a3b8'">Our Purpose →</a>
+    </div>
+    
     <div class="container">
         <h1>Keystone Youth</h1>
-        <p class="subtitle">Welcome! Select your path below to get started.</p>
+        <p class="subtitle" id="dynamic-subtitle">Welcome! Why are you here today?</p>
 
-        <div class="paths">
-            <a href="leader.html" class="card leader">
-                <div class="icon">🧭</div>
-                <h2>I am a Leader</h2>
-                <p>Access weekly lesson plans, discussion guides, and teaching tools.</p>
+        <div id="step-1" class="paths">
+            <a href="todays-study.html" class="card study">
+                <div class="icon">📖</div>
+                <h2>This Week's Bible Study</h2>
+                <p>Watch the weekly scripture reading and devotional video.</p>
             </a>
 
-            <a href="student.html" class="card student">
-                <div class="icon">🔥</div>
-                <h2>I am a Student</h2>
-                <p>Find weekly materials, Bible study challenges, and event info.</p>
-            </a>
-
-            <a href="parent.html" class="card parent">
-                <div class="icon">👨‍👧</div>
-                <h2>I am a Parent</h2>
-                <p>Find Bible study challenges, serving opportunities, and event info.</p>
-            </a>
-
-            <a href="helper.html" class="card helper">
-                <div class="icon">👨‍👧</div>
-                <h2>I am a Helper</h2>
-                <p>Find serving opportunities, ways to bless the ministry, and event info.</p>
+            <a onclick="showInfoMenu()" class="card info">
+                <div class="icon">ℹ️</div>
+                <h2>Information</h2>
+                <p>Access the main hubs for Leaders, Students, Parents, and Helpers.</p>
             </a>
         </div>
+
+        <div id="step-2-info" style="display: none;">
+            <a onclick="goBack()" class="back-btn">← Back</a>
+            <div class="paths">
+                <a href="leader.html" class="card leader">
+                    <div class="icon">🧭</div>
+                    <h2>I am a Leader</h2>
+                    <p>Access weekly lesson plans, discussion guides, and teaching tools.</p>
+                </a>
+
+                <a href="student.html" class="card student">
+                    <div class="icon">🔥</div>
+                    <h2>I am a Student</h2>
+                    <p>Find weekly materials, Bible study challenges, and event info.</p>
+                </a>
+
+                <a href="parent.html" class="card parent">
+                    <div class="icon">👨‍👩‍👧‍👦</div>
+                    <h2>I am a Parent</h2>
+                    <p>Find Bible study challenges, serving opportunities, and event info.</p>
+                </a>
+
+                <a href="helper.html" class="card helper">
+                    <div class="icon">🤲</div>
+                    <h2>I am a Helper</h2>
+                    <p>Find serving opportunities, ways to bless the ministry, and event info.</p>
+                </a>
+            </div>
+        </div>
+
     </div>
+
+    <script>
+        const step1 = document.getElementById('step-1');
+        const step2Info = document.getElementById('step-2-info');
+        const subtitle = document.getElementById('dynamic-subtitle');
+
+        function showInfoMenu() {
+            step1.style.display = 'none';
+            step2Info.style.display = 'block';
+            subtitle.innerText = "Select your information hub below.";
+        }
+
+        function goBack() {
+            step2Info.style.display = 'none';
+            step1.style.display = 'flex'; // Uses flex to maintain the side-by-side layout
+            subtitle.innerText = "Welcome! Why are you here today?";
+        }
+    </script>
 
 </body>
 </html>

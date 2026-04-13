@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Keystone Youth Group - The Plagues</title>
+    <style>
+        /* Base Mini-Website & Print Styles */
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #5c5c5c;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Each page represents one side of an 11x8.5 piece of paper */
+        .page {
+            width: 11in;
+            height: 8.5in;
+            background-color: #fcf9f2; /* Sand/Desert color */
+            display: flex;
+            margin: 20px 0;
+            box-shadow: 0 0 15px rgba(0,0,0,0.5);
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        /* The 3 columns of the tri-fold */
+        .panel {
+            width: 33.333%;
+            height: 100%;
+            padding: 0.4in;
+            box-sizing: border-box;
+            border-right: 1px dashed #ccc; /* Fold lines */
+            display: flex;
+            flex-direction: column;
+        }
+        .panel:last-child {
+            border-right: none;
+        }
+
+        /* Typography and Colors */
+        h1, h2, h3 {
+            color: #8c2100; /* Deep red/orange */
+            margin-top: 0;
+        }
+        h1 {
+            font-size: 28px;
+            text-align: center;
+            text-transform: uppercase;
+        }
+        h2 {
+            font-size: 20px;
+            border-bottom: 2px solid #e07a00;
+            padding-bottom: 5px;
+        }
+        h3 {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        p, ul, li {
+            font-size: 14px;
+            color: #333;
+            line-height: 1.5;
+        }
+        .highlight-box {
+            background-color: #ffecd1;
+            border-left: 4px solid #e07a00;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+
+        /* Front Cover Specifics */
+        .cover {
+            text-align: center;
+            background-color: #2b1f1c;
+            color: #fff;
+            justify-content: center;
+        }
+        .cover h1, .cover h2, .cover h3, .cover p {
+            color: #fff;
+            border: none;
+        }
+        .cover h2 {
+            color: #ff9100;
+        }
+        canvas {
+            background-color: #fcf9f2;
+            margin: 20px auto;
+            border-radius: 50%;
+            box-shadow: 0 0 20px #ff5100;
+        }
+
+        /* Print Settings to make it fit perfectly on paper */
+        @media print {
+            body {
+                background-color: #fff;
+                margin: 0;
+            }
+            .page {
+                margin: 0;
+                box-shadow: none;
+                page-break-after: always;
+            }
+            .panel {
+                border-right: none; /* Hide dashed fold lines on actual print */
+            }
+            @page {
+                size: landscape;
+                margin: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="page">
+        
+        <div class="panel">
+            <h2>Keep Your Skills Sharp!</h2>
+            <p>Use the tools we learned on this week's passage (Exodus 4-11).</p>
+            
+            <div class="highlight-box">
+                <h3>The Theme:</h3>
+                <p>God's absolute power and the danger of a hardened, stubborn heart.</p>
+            </div>
+            
+            <div class="highlight-box">
+                <h3>Teaching about Christ:</h3>
+                <p>Jesus rescues us from the slavery of sin, just as God rescued Israel from Egypt.</p>
+            </div>
+            
+            <div class="highlight-box">
+                <h3>The Promise to Claim:</h3>
+                <p>God makes a distinction for His people! Just as He protected the Israelites in Goshen from the plagues, God protects and redeems those who are His.</p>
+            </div>
+
+            <div class="highlight-box">
+                <h3>Memorize the Verse:</h3>
+                <p>"And the Egyptians shall know that I am the Lord, when I stretch out My hand on Egypt and bring out the children of Israel from among them."</p>
+                <p><strong>- Exodus 7:5</strong></p>
+            </div>
+        </div>
+
+        <div class="panel">
+            <h2>Next Week!</h2>
+            <p><strong>Date:</strong> April 26th, 2026</p>
+            <p><strong>Topic:</strong> The Passover and the Red Sea (Exodus 12-14)</p>
+            <p><strong>Bring:</strong> Your Bible, a friend, and yourself!</p>
+            <br><br><br>
+            <h2>Contact Us</h2>
+            <p><strong>Youth Pastor:</strong> Evan Brandsma</p>
+            <p><strong>Email:</strong> evanbrandsma@gmail.com</p>
+            <p><strong>Meeting Time:</strong> Sundays @ 5:00-6:30 PM</p>
+        </div>
+
+        <div class="panel cover">
+            <h3>The Grand Story:</h3>
+            <h1>The Plagues</h1>
+            <canvas id="plagueCanvas" width="200" height="200"></canvas>
+            <h2>Power, Pride, & The Finger of God</h2>
+            <p>Youth Group Weekly Take-Home<br>Covering: Exodus 4-11</p>
+        </div>
+
+    </div>
+
+    <div class="page">
+        
+        <div class="panel">
+            <h2>Where Are We?</h2>
+            <p>Moses returned to Egypt to demand Israel's freedom. But Pharaoh arrogantly replied, "Who is the Lord that I should obey Him?" and made the Israelites' slavery even worse.</p>
+            
+            <h2>The Ten Plagues</h2>
+            <p>God unleashed a series of miraculous plagues (Blood, Frogs, Lice, Flies, Livestock, Boils, Hail, Locusts, Darkness, and the Firstborn). These weren't random natural disasters; God was systematically defeating every false god of Egypt to prove He alone is Lord!</p>
+
+            <h2>The Hardened Heart</h2>
+            <p>Even when Pharaoh's own magicians told him, <em>"This is the finger of God,"</em> Pharaoh stubbornly refused to listen. He would fake an apology just to make the pain stop, but his heart never truly changed. His pride eventually destroyed his entire nation.</p>
+        </div>
+
+        <div class="panel">
+            <h2>Mid-Week Dive Deep</h2>
+            <p><em>Grab a parent, a sibling, or just your Bible and a notebook, and take 10 minutes to work through this!</em></p>
+            
+            <div class="highlight-box">
+                <p><strong>1. READ IT:</strong> Read Exodus 8:15 and Exodus 10:7-9 together.</p>
+            </div>
+            
+            <h3>For Younger Kids:</h3>
+            <p>Why do you think Pharaoh kept changing his mind after the plagues stopped? How can we make sure our hearts stay "soft" and obedient to God, even when it's hard?</p>
+            
+            <h3>For Older Youth:</h3>
+            <p>Pharaoh tried to compromise with God (he said: "You can go, but leave your animals behind"). In what ways do we try to compromise with sin, giving God <em>most</em> of our lives but holding something back for ourselves?</p>
+        </div>
+
+        <div class="panel">
+            <h2>Weekly Action Steps</h2>
+            <p><strong>Choose your challenge for the week:</strong></p>
+
+            <div class="highlight-box">
+                <h3>The "Soft Heart" Challenge</h3>
+                <p>Pharaoh held onto Israel out of pure pride, and it cost him everything. Is there a grudge you're holding onto? An apology you refuse to give? A rule you keep breaking? This week, challenge yourself to swallow your pride and let it go. Don't be like Pharaoh!</p>
+            </div>
+
+            <div class="highlight-box">
+                <h3>The "No Compromise" Audit</h3>
+                <p>What is one area of your life you've left back in "Egypt"? (Your money, your media choices, a toxic friendship?) Make a commitment this week to bring 100% of your life under God's authority. Leave no hoof behind!</p>
+            </div>
+
+            <div class="highlight-box">
+                <h3>The 5-Minute Meditation</h3>
+                <p>Spend 5 minutes in total silence this week thinking about God's massive power over the elements. Ask Him: <em>"God, show me any area where my heart has become hard toward You."</em></p>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const canvas = document.getElementById('plagueCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Draw the wooden staff
+        ctx.strokeStyle = '#8B4513'; // SaddleBrown
+        ctx.lineWidth = 12;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(100, 20);
+        ctx.lineTo(100, 180);
+        ctx.stroke();
+
+        // Draw the serpent wrapping around the staff
+        ctx.strokeStyle = '#228B22'; // ForestGreen
+        ctx.lineWidth = 10;
+        ctx.beginPath();
+        
+        // Coils around the staff
+        ctx.moveTo(130, 40); // Snake head area
+        ctx.quadraticCurveTo(80, 50, 100, 70); // 1st wrap front
+        ctx.quadraticCurveTo(120, 90, 100, 110); // 2nd wrap front
+        ctx.quadraticCurveTo(80, 130, 100, 150); // 3rd wrap front
+        ctx.quadraticCurveTo(120, 170, 140, 160); // Tail
+        ctx.stroke();
+
+        // Snake Head
+        ctx.fillStyle = '#228B22';
+        ctx.beginPath();
+        ctx.arc(130, 40, 10, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Snake Eye
+        ctx.fillStyle = '#FFD700'; // Gold/Yellow eye
+        ctx.beginPath();
+        ctx.arc(128, 38, 3, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Snake Tongue
+        ctx.strokeStyle = '#FF0000';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(138, 40);
+        ctx.lineTo(150, 40);
+        ctx.lineTo(155, 35);
+        ctx.moveTo(150, 40);
+        ctx.lineTo(155, 45);
+        ctx.stroke();
+    </script>
+</body>
+</html>

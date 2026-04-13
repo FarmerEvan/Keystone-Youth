@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Today's Bible Study | Keystone Youth</title>
+    <style>
+        /* Base Styles */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            color: #ffffff;
+            min-height: 100vh;
+        }
+
+        .container { max-width: 900px; margin: 0 auto; padding: 2rem; }
+
+        /* Navigation */
+        .nav { margin-bottom: 2rem; }
+        .nav a { color: #94a3b8; text-decoration: none; transition: color 0.3s; font-size: 1rem; }
+        .nav a:hover { color: #facc15; /* Yellow Accent */ }
+
+        /* Header */
+        .header { text-align: center; margin-bottom: 2rem; }
+        .header h1 { font-size: 2.8rem; color: #facc15; margin: 0 0 10px 0; }
+        .header p { color: #cbd5e1; font-size: 1.1rem; line-height: 1.5; }
+
+        /* Responsive Video Container */
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            height: 0;
+            overflow: hidden;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            margin-bottom: 2rem;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Blog / Key Points Section */
+        .blog-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 2.5rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .blog-card h2 {
+            color: #facc15;
+            margin-top: 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 10px;
+        }
+
+        .blog-card h3 {
+            color: #f8fafc;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .blog-card p {
+            color: #cbd5e1;
+            line-height: 1.7;
+            font-size: 1.05rem;
+        }
+
+        .highlight-box {
+            background: rgba(0, 0, 0, 0.2);
+            border-left: 4px solid #facc15;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        ul {
+            color: #cbd5e1;
+            line-height: 1.7;
+            font-size: 1.05rem;
+        }
+
+        @media (max-width: 600px) {
+            .header h1 { font-size: 2.2rem; }
+            .blog-card { padding: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="nav">
+            <a href="index.html">← Back to Home</a>
+        </div>
+
+        <div class="header">
+            <h1>This Week's Bible Study</h1>
+            <p>The Plagues of Egypt | Exodus 4-11</p>
+        </div>
+
+        <div class="video-container">
+            <iframe src="https://www.youtube.com/embed/YOUR_VIDEO_ID_HERE" title="Keystone Youth Bible Study" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+
+        <div class="blog-card">
+            <h2>Message Notes & Key Points</h2>
+            
+            <p>Hey Keystone Youth! This week we are diving into Exodus chapters 4 through 11. Make sure you have your Bible open as you watch the video above.</p>
+
+            <div class="highlight-box">
+                <p><strong>Scripture Focus:</strong> "And the Egyptians shall know that I am the Lord, when I stretch out My hand on Egypt and bring out the children of Israel from among them." - Exodus 7:5</p>
+            </div>
+
+            <h3>Things to Pay Attention To:</h3>
+            <ul>
+                <li><strong>God vs. The False Gods:</strong> Notice how the 10 plagues weren't just random weather events. God was systematically defeating every false god the Egyptians worshipped (the Nile, the frogs, the sun, etc.).</li>
+                <li><strong>The Stubborn Heart:</strong> Pay attention to how many times Pharaoh says he will let the people go, only to change his mind as soon as the plague stops. Are there areas in our lives where we do the same thing to God?</li>
+                <li><strong>No Compromise:</strong> Pharaoh tried to tell Moses, "You can go, but leave your animals behind." He wanted to keep a leash on them. God demands total surrender—no compromise!</li>
+            </ul>
+
+            <br>
+            <p><em>Grab your weekly brochure from the Student Hub to see this week's challenges! See you Sunday!</em></p>
+        </div>
+        <br>
+<a href="Bible Study Archives/study-archive.html" style="display: inline-block; background: transparent; border: 2px solid #facc15; color: #facc15; text-decoration: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; text-align: center; transition: all 0.3s;" onmouseover="this.style.background='rgba(250, 204, 21, 0.1)'" onmouseout="this.style.background='transparent'">📂 View Past Studies</a>
+    </div>
+
+</body>
+</html>

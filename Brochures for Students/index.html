@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brochure Archive | Keystone Youth</title>
+    <style>
+        /* Base Styles */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            color: #ffffff;
+            min-height: 100vh;
+        }
+
+        .container { max-width: 900px; margin: 0 auto; padding: 2rem; }
+
+        /* Navigation */
+        .nav { margin-bottom: 2rem; }
+        .nav a { color: #94a3b8; text-decoration: none; transition: color 0.3s; font-size: 1rem; }
+        .nav a:hover { color: #fb923c; /* Student Orange */ }
+
+        /* Header */
+        .header { text-align: center; margin-bottom: 2rem; }
+        .header h1 { font-size: 2.8rem; color: #fb923c; margin: 0 0 10px 0; }
+        .header p { color: #cbd5e1; font-size: 1.1rem; line-height: 1.5; }
+
+        /* Search Bar */
+        .search-container { margin-bottom: 2rem; text-align: center; }
+        #searchInput {
+            width: 100%;
+            max-width: 500px;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(0, 0, 0, 0.3);
+            color: white;
+            font-size: 1.1rem;
+            box-sizing: border-box;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        #searchInput:focus {
+            outline: none;
+            border-color: #fb923c;
+            box-shadow: 0 0 0 3px rgba(251, 146, 60, 0.2);
+        }
+        #searchInput::placeholder { color: #64748b; }
+
+        /* Card Container */
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+        }
+
+        /* HTML Folders (Details/Summary tags) */
+        details {
+            background: rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+        details[open] { background: rgba(0, 0, 0, 0.3); padding-bottom: 15px; }
+        
+        summary {
+            cursor: pointer;
+            font-weight: bold;
+            color: #fb923c;
+            font-size: 1.2rem;
+            outline: none;
+            display: flex;
+            align-items: center;
+            padding: 5px;
+        }
+        summary::before { content: '📁 '; margin-right: 10px; font-size: 1.4rem; }
+        details[open] > summary::before { content: '📂 '; }
+        
+        /* Nested Details (Months inside Years) */
+        details details {
+            margin-left: 20px;
+            margin-top: 10px;
+            background: rgba(255, 255, 255, 0.02);
+            border-left: 2px solid #fb923c;
+        }
+        details details summary { color: #fed7aa; font-size: 1.1rem; }
+
+        /* Lesson Links */
+        .lesson-list {
+            list-style: none;
+            padding: 0;
+            margin: 10px 0 0 20px;
+        }
+        .lesson-item {
+            background: rgba(255, 255, 255, 0.05);
+            margin-bottom: 8px;
+            padding: 12px 15px;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.2s;
+        }
+        .lesson-item:hover { background: rgba(251, 146, 60, 0.1); }
+        
+        .lesson-item a {
+            color: #f8fafc;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1.05rem;
+            display: block;
+            width: 100%;
+        }
+        .lesson-item a:hover { color: #fb923c; }
+        
+        .lesson-date {
+            color: #94a3b8;
+            font-size: 0.85rem;
+            margin-left: 15px;
+            white-space: nowrap;
+        }
+
+        @media (max-width: 600px) {
+            .header h1 { font-size: 2.2rem; }
+            .lesson-item { flex-direction: column; align-items: flex-start; gap: 5px; }
+            .lesson-date { margin-left: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="nav">
+            <a href="../student.html">← Back to Student Hub</a>
+        </div>
+
+        <div class="header">
+            <h1>Brochure Archive</h1>
+            <p>Access all past weekly take-home brochures, challenges, and memory verses.</p>
+        </div>
+
+        <div class="search-container">
+            <input type="text" id="searchInput" onkeyup="searchLessons()" placeholder="Search by topic, book, or date (e.g. 'Exodus')...">
+        </div>
+
+        <div class="card" id="archiveContainer">
+            
+            <details class="year-folder">
+                <summary>2026 Series</summary>
+                
+                <details class="month-folder">
+                    <summary>April - The Grand Story</summary>
+                    <ul class="lesson-list">
+                        <li class="lesson-item">
+                            <a href="Past Lesson Brochures/Burning Bush Brochure.html">Out of Egypt (Exodus 1-3)</a>
+                            <span class="lesson-date">April 12, 2026</span>
+                        </li>
+                        <li class="lesson-item">
+                            <a href="This Week's Brochure/Plagues Brochure.html">The Great Plagues (Exodus 4-11)</a>
+                            <span class="lesson-date">April 19, 2026</span>
+                        </li>
+                    </ul>
+                </details>
+
+            </details>
+
+        </div>
+    </div>
+
+    <script>
+        function searchLessons() {
+            // Get the user's search query
+            var input = document.getElementById('searchInput').value.toLowerCase();
+            
+            // Get all the lesson items
+            var items = document.getElementsByClassName('lesson-item');
+            
+            // If search is empty, collapse all folders back to normal
+            if (input === "") {
+                let allDetails = document.querySelectorAll('details');
+                allDetails.forEach(detail => detail.removeAttribute('open'));
+            } else {
+                // If searching, open all folders so they can see the results
+                let allDetails = document.querySelectorAll('details');
+                allDetails.forEach(detail => detail.setAttribute('open', 'true'));
+            }
+
+            // Loop through all list items, and hide those who don't match the search query
+            for (var i = 0; i < items.length; i++) {
+                var text = items[i].textContent || items[i].innerText;
+                if (text.toLowerCase().indexOf(input) > -1) {
+                    items[i].style.display = "flex"; // Show it
+                } else {
+                    items[i].style.display = "none"; // Hide it
+                }
+            }
+        }
+    </script>
+
+</body>
+</html>
