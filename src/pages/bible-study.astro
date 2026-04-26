@@ -1,0 +1,131 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+const lessonsCsv = import.meta.env.PUBLIC_LESSONS_CSV_URL;
+---
+
+<BaseLayout title="This Week's Bible Study" backLink="/parent" backText="Parent Hub" accentColor="#facc15">
+
+    <div id="dynamic-lesson-container">
+        <p style="text-align: center; color: #94a3b8; font-style: italic; margin-top: 50px;">Loading this week's study...</p>
+    </div>
+
+</BaseLayout>
+
+<style is:global>
+    /* Astro scopes this CSS so it only affects this specific page! */
+    .video-container {
+        position: relative;
+        padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+        height: 0;
+        overflow: hidden;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        margin-bottom: 2rem;
+        border: 2px solid rgba(255, 255, 255, 0.1);
+    }
+    .video-container iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+</style>
+
+<script is:inline define:vars={{ LESSONS_URL: lessonsCsv }}>
+    
+    function parseCsvRow(row, expectedLength) {
+        const c = [];
+        let inQuotes = false;
+        let current = '';
+        for (let i = 0; i < row.length; i++) {
+            const char = row[i];
+            if (char === '"') inQuotes = !inQuotes;
+            else if (char === ',' && !inQuotes) { c.push(current); current = ''; }
+            else current += char;
+        }
+        c.push(current);
+        const mapped = c.map(s => s.replace(/^"|"$/g, '').trim());
+        while(mapped.length < expectedLength) mapped.push('');
+        return mapped;
+    }
+
+    async function loadActiveLesson() {
+        const container = document.getElementById('dynamic-lesson-container');
+        try {
+            const res = await fetch(`${LESSONS_URL}${LESSONS_URL.includes('?') ? '&' : '?'}t=${Date.now()}`);
+            const text = await res.text();
+            const rows = text.split('\n').slice(1);
+            
+            let activeLesson = null;
+            const today = new Date();
+            today.setHours(0,0,0,0);
+
+            for (let i = 0; i < rows.length; i++) {
+                if(!rows[i].trim()) continue;
+                const c = parseCsvRow(rows[i], 6);
+                if(!c[2]) continue;
+
+                let startDate = new Date();
+                if (c[0].match(/^\d{4}-\d{2}-\d{2}$/)) { const p = c[0].split('-'); startDate = new Date(p[0], p[1]-1, p[2]); } 
+                else { startDate = new Date(c[0]); }
+                startDate.setHours(0,0,0,0);
+
+                let endDate = new Date();
+                if (c[1].match(/^\d{4}-\d{2}-\d{2}$/)) { const p = c[1].split('-'); endDate = new Date(p[0], p[1]-1, p[2]); } 
+                else { endDate = new Date(c[1]); }
+                endDate.setHours(23,59,59,999);
+
+                if (today >= startDate && today <= endDate) {
+                    activeLesson = { 
+                        title: c[2], 
+                        scripture: c[3], 
+                        youtubeId: c[4], 
+                        desc: c[5].replace(/\\n/g, '<br>') 
+                    };
+                    break;
+                }
+            }
+
+            if (activeLesson) {
+                container.innerHTML = `
+                    <div class="header" style="text-align: center; margin-bottom: 2rem;">
+                        <h1 style="font-size: 2.8rem; color: #facc15; margin: 0 0 10px 0;">This Week's Bible Study</h1>
+                        <p style="color: #cbd5e1; font-size: 1.1rem;">${activeLesson.title}</p>
+                    </div>
+
+                    <div class="video-container">
+                        <iframe src="https://www.youtube.com/embed/${activeLesson.youtubeId.trim()}" title="Keystone Youth Bible Study" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+
+                    <div class="card blog-card" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 2rem;">
+                        <h2 style="color: #facc15; margin-top: 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 10px;">Family Discussion & Key Points</h2>
+                        
+                        <div style="background: rgba(0, 0, 0, 0.2); border-left: 4px solid #facc15; padding: 15px 20px; border-radius: 8px; margin: 20px 0;">
+                            <p style="color: #cbd5e1; line-height: 1.7; font-size: 1.05rem; margin: 0;"><strong>Scripture Focus:</strong> ${activeLesson.scripture}</p>
+                        </div>
+
+                        <div style="color: #cbd5e1; line-height: 1.7; font-size: 1.05rem;">
+                            ${activeLesson.desc}
+                        </div>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 50px 20px;">
+                        <h2 style="color: #facc15; font-size: 2rem;">Check Back Soon!</h2>
+                        <p style="color: #cbd5e1; font-size: 1.1rem; line-height: 1.6;">There is no active Bible Study scheduled for this week. Take this time to review our past lessons in the archive.</p>
+                        <br>
+                        <a href="/study-archive" style="display: inline-block; background: transparent; border: 2px solid #facc15; color: #facc15; text-decoration: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; text-align: center; transition: all 0.3s;">📂 View Past Studies</a>
+                    </div>
+                `;
+            }
+
+        } catch(e) {
+            container.innerHTML = '<p style="color: #ef4444; text-align: center;">Failed to load Bible Study.</p>';
+        }
+    }
+
+    loadActiveLesson();
+    document.addEventListener('astro:page-load', loadActiveLesson);
+</script>

@@ -1,0 +1,186 @@
+---
+// src/components/PrayerWall.astro
+
+export interface Props {
+    audience: string; // 'Parent', 'Student', 'Leader', 'Helper', or 'Admin'
+}
+
+const { audience } = Astro.props;
+const prayersCsv = import.meta.env.PUBLIC_PRAYERS_CSV_URL;
+const scriptAppUrl = import.meta.env.PUBLIC_SCRIPT_URL; 
+---
+
+<div style="display: flex; flex-direction: column; height: 100%;">
+    <div id={`prayers-container-${audience}`} style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px;">
+        <p style="text-align: center; color: #94a3b8; font-style: italic; width: 100%;">Loading prayer wall...</p>
+    </div>
+
+    <button onclick={`document.getElementById('prayer-modal-${audience}').style.display='flex'`} style="background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: auto; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.15)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">
+        ✍️ Share a Request or Praise
+    </button>
+</div>
+
+<div id={`prayer-modal-${audience}`} class="modal-overlay" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(5px); z-index: 10000; align-items: center; justify-content: center; padding: 1rem;">
+    <div class="modal-content" style="background: #1e293b; border-top: 4px solid #3b82f6; border-radius: 16px; width: 100%; max-width: 500px; padding: 2rem; box-shadow: 0 20px 50px rgba(0,0,0,0.8); max-height: 90vh; overflow-y: auto;">
+        <h2 style="color: white; margin: 0 0 5px 0;">Share with the Wall</h2>
+        <p style="color: #cbd5e1; font-size: 0.9rem; margin-bottom: 20px;">Let us know how we can pray, or share what God has done!</p>
+
+        <select id={`prayer-type-${audience}`} style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.3); color: white; margin-bottom: 10px; font-family: inherit;">
+            <option value="Request">🙏 Prayer Request</option>
+            <option value="Praise">🙌 Praise Report</option>
+        </select>
+
+        <input type="text" id={`prayer-impacted-${audience}`} placeholder="Who is this for? (e.g. Me, My Mom, A friend)" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.3); color: white; margin-bottom: 10px; box-sizing: border-box;" required>
+        <textarea id={`prayer-details-${audience}`} rows="3" placeholder="What are the details?" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.3); color: white; font-family: inherit; margin-bottom: 15px; resize: vertical; box-sizing: border-box;" required></textarea>
+
+        <p style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 5px;">Who would you like to share this with?</p>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px;">
+            <label style="color: #cbd5e1; font-size: 0.85rem; display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" id={`prayer-team-${audience}`} checked> Prayer Team</label>
+            <label style="color: #cbd5e1; font-size: 0.85rem; display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" id={`prayer-parents-${audience}`}> Parents</label>
+            <label style="color: #cbd5e1; font-size: 0.85rem; display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" id={`prayer-students-${audience}`}> Students</label>
+            <label style="color: #cbd5e1; font-size: 0.85rem; display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" id={`prayer-leaders-${audience}`} onchange={`document.getElementById('leader-name-container-${audience}').style.display = this.checked ? 'block' : 'none'`}> Leaders</label>
+        </div>
+
+        <div id={`leader-name-container-${audience}`} style="display: none; margin-bottom: 15px;">
+            <input type="text" id={`prayer-leader-name-${audience}`} placeholder="Which Leader? (Leave blank for all leaders)" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.3); color: white; box-sizing: border-box;">
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px;">
+            <button onclick={`document.getElementById('prayer-modal-${audience}').style.display='none'`} style="background: transparent; border: 1px solid #475569; color: white; padding: 10px 20px; border-radius: 8px; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='transparent'">Cancel</button>
+            <button id={`btn-submit-prayer-${audience}`} style="background: #3b82f6; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">Post to Wall</button>
+        </div>
+    </div>
+</div>
+
+<script is:inline define:vars={{ AUDIENCE: audience, PRAYERS_URL: prayersCsv, SCRIPT_URL: scriptAppUrl }}>
+    
+    function parseCsvRow(row, expectedLength) {
+        const c = []; let inQuotes = false; let current = '';
+        for (let i = 0; i < row.length; i++) {
+            const char = row[i];
+            if (char === '"') inQuotes = !inQuotes;
+            else if (char === ',' && !inQuotes) { c.push(current); current = ''; }
+            else current += char;
+        }
+        c.push(current);
+        const mapped = c.map(s => s.replace(/^"|"$/g, '').trim());
+        while(mapped.length < expectedLength) mapped.push('');
+        return mapped;
+    }
+
+    function addViewAllButton(container, hiddenElements, totalCount, color) {
+        const btn = document.createElement('button');
+        btn.innerText = `View All (${totalCount}) ▾`;
+        btn.style = `width: 100%; background: transparent; border: 1px dashed ${color}; color: ${color}; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: all 0.2s; margin-top: 5px;`;
+        let isExpanded = false;
+        btn.onmouseover = () => { btn.style.background = 'rgba(255,255,255,0.05)'; };
+        btn.onmouseout = () => { btn.style.background = 'transparent'; };
+        btn.onclick = () => {
+            isExpanded = !isExpanded;
+            hiddenElements.forEach(el => el.style.display = isExpanded ? el.dataset.originalDisplay : 'none');
+            btn.innerText = isExpanded ? `Show Less ▴` : `View All (${totalCount}) ▾`;
+        };
+        container.appendChild(btn);
+    }
+
+    async function loadPrayers() {
+        const container = document.getElementById(`prayers-container-${AUDIENCE}`);
+        try {
+            const res = await fetch(`${PRAYERS_URL}${PRAYERS_URL.includes('?') ? '&' : '?'}t=${Date.now()}`);
+            const text = await res.text();
+            const rows = text.split('\n').slice(1).reverse(); // Newest first
+            
+            let count = 0;
+            let hiddenElements = [];
+            container.innerHTML = '';
+            
+            // Map Audience to Column Index
+            // F: Team/Helper (5), G: Parents (6), H: Students (7), I: Leaders (8)
+            let audienceIndex = 5; 
+            if(AUDIENCE === 'Parent') audienceIndex = 6;
+            if(AUDIENCE === 'Student') audienceIndex = 7;
+            if(AUDIENCE === 'Leader') audienceIndex = 8;
+            if(AUDIENCE === 'Admin') audienceIndex = -1; // Admin sees all
+
+            rows.forEach(row => {
+                if(!row.trim()) return;
+                const c = parseCsvRow(row, 10);
+                if(!c[1]) return; 
+
+                const isRequest = c[2] === 'Request';
+                const matchesAudience = audienceIndex === -1 || (c[audienceIndex] || '').toUpperCase() === 'TRUE'; 
+
+                if (matchesAudience) {
+                    const box = document.createElement('div');
+                    const color = isRequest ? '#3b82f6' : '#10b981';
+                    const icon = isRequest ? '🙏' : '🙌';
+                    
+                    box.style = `background: rgba(0,0,0,0.2); border-left: 3px solid ${color}; padding: 15px; border-radius: 8px;`;
+                    
+                    let leaderTag = '';
+                    if (AUDIENCE === 'Leader' && c[9] && c[9].trim() !== '') {
+                        leaderTag = `<span style="background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; color: #cbd5e1; margin-left: 8px;">Target: ${c[9]}</span>`;
+                    }
+
+                    box.innerHTML = `
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 5px;">
+                            <strong style="color: ${color}; font-size: 0.85rem; text-transform: uppercase;">${icon} ${c[2]} ${leaderTag}</strong>
+                            <span style="color: #64748b; font-size: 0.75rem;">${new Date(c[1]).toLocaleDateString()}</span>
+                        </div>
+                        <h4 style="margin: 0 0 5px 0; color: #fff;">${c[3]}</h4>
+                        <p style="color: #cbd5e1; font-size: 0.9rem; line-height: 1.5; margin: 0; white-space: pre-wrap;">${c[4].replace(/\\n/g, '<br>')}</p>
+                    `;
+                    
+                    if (count >= 3) {
+                        box.dataset.originalDisplay = box.style.display || 'block';
+                        box.style.display = 'none';
+                        hiddenElements.push(box);
+                    }
+                    
+                    container.appendChild(box);
+                    count++;
+                }
+            });
+
+            if(count === 0) container.innerHTML = '<p style="color: #94a3b8; text-align: center; width: 100%;">No active prayers to display.</p>';
+            else if (hiddenElements.length > 0) addViewAllButton(container, hiddenElements, count, '#3b82f6');
+
+        } catch(e) {
+            container.innerHTML = '<p style="color: #ef4444; text-align: center; width: 100%;">Failed to load prayers.</p>';
+        }
+    }
+
+    document.getElementById(`btn-submit-prayer-${AUDIENCE}`).onclick = async () => {
+        const type = document.getElementById(`prayer-type-${AUDIENCE}`).value;
+        const impacted = document.getElementById(`prayer-impacted-${AUDIENCE}`).value.trim();
+        const details = document.getElementById(`prayer-details-${AUDIENCE}`).value.trim();
+        const leaderName = document.getElementById(`prayer-leader-name-${AUDIENCE}`).value.trim();
+
+        if(!impacted || !details) return alert("Please provide the details and who this is for!");
+
+        const btn = document.getElementById(`btn-submit-prayer-${AUDIENCE}`);
+        btn.innerText = "Posting...";
+
+        try {
+            const params = new URLSearchParams({ 
+                action: "savePrayer", 
+                type: type, 
+                impacted: impacted, 
+                details: details.replace(/\n/g, '\\n'),
+                forTeam: document.getElementById(`prayer-team-${AUDIENCE}`).checked ? "TRUE" : "FALSE",
+                forParents: document.getElementById(`prayer-parents-${AUDIENCE}`).checked ? "TRUE" : "FALSE",
+                forStudents: document.getElementById(`prayer-students-${AUDIENCE}`).checked ? "TRUE" : "FALSE",
+                forLeaders: document.getElementById(`prayer-leaders-${AUDIENCE}`).checked ? "TRUE" : "FALSE",
+                leaderName: leaderName
+            });
+            await fetch(`${SCRIPT_URL}?${params.toString()}`, {mode:'no-cors'});
+            btn.innerText = "✅ Posted!";
+            setTimeout(() => { document.getElementById(`prayer-modal-${AUDIENCE}`).style.display = 'none'; loadPrayers(); }, 2000);
+        } catch (e) {
+            btn.innerText = "❌ Error";
+        }
+    };
+
+    loadPrayers();
+    document.addEventListener('astro:page-load', loadPrayers);
+</script>

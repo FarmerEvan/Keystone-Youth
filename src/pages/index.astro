@@ -1,17 +1,68 @@
 ---
-
+// src/pages/index.astro
 ---
-
+<!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome | Keystone Youth</title>
+    <style>
+        body { margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: #ffffff; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+        .container { text-align: center; padding: 2rem; max-width: 800px; width: 100%; }
+        h1 { font-size: 3.5rem; margin: 0; color: #fb923c; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        p.subtitle { font-size: 1.2rem; color: #94a3b8; margin-bottom: 3rem; min-height: 28px; }
+        .back-btn { display: inline-block; color: #94a3b8; text-decoration: none; font-size: 1rem; margin-bottom: 2rem; transition: color 0.3s ease; cursor: pointer; }
+        .back-btn:hover { color: #ffffff; }
+        .paths { display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap; animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .card { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 2.5rem 2rem; width: 280px; text-decoration: none; color: white; transition: all 0.3s ease; backdrop-filter: blur(10px); display: flex; flex-direction: column; align-items: center; cursor: pointer; }
+        .card:hover { transform: translateY(-10px); box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        .card.study:hover { border-color: #facc15; background: rgba(250, 204, 21, 0.1); } 
+        .card.info:hover { border-color: #a855f7; background: rgba(168, 85, 247, 0.1); } 
+        .card.leader:hover { border-color: #38bdf8; background: rgba(56, 189, 248, 0.1); } 
+        .card.student:hover { border-color: #fb923c; background: rgba(251, 146, 60, 0.1); } 
+        .card.parent:hover { border-color: #10b981; background: rgba(16, 185, 129, 0.1); } 
+        .card.helper:hover { border-color: #a855f7; background: rgba(168, 85, 247, 0.1); } 
+        .card h2 { margin: 0 0 10px 0; font-size: 1.8rem; }
+        .card p { margin: 0; color: #cbd5e1; font-size: 1rem; line-height: 1.5; }
+        .icon { font-size: 3rem; margin-bottom: 1rem; }
+        @media (max-width: 600px) { h1 { font-size: 2.5rem; } .paths { flex-direction: column; align-items: center; } .card { width: 100%; max-width: 300px; box-sizing: border-box; } }
+    </style>
+</head>
+<body>
+    <div style="position: absolute; top: 20px; right: 30px;">
+        <a href="/about" style="color: #94a3b8; text-decoration: none; font-weight: bold; font-size: 1rem; transition: color 0.3s;" onmouseover="this.style.color='#fb923c'" onmouseout="this.style.color='#94a3b8'">Our Purpose →</a>
+    </div>
+
+    <div class="container">
+        <h1>Keystone Youth</h1>
+        <a><p class="subtitle">Welcome! Why are you here today?</p></a>
+            <div class="paths">
+                <a href="/leader" class="card leader"><div class="icon">🧭</div><h2>I am a Leader</h2><p>Access weekly lesson plans, discussion guides, and teaching tools.</p></a>
+                <a href="/student" class="card student"><div class="icon">🔥</div><h2>I am a Student</h2><p>Find weekly materials, Bible study challenges, and event info.</p></a>
+                <a href="/parent" class="card parent"><div class="icon">👨‍👩‍👧‍👦</div><h2>I am a Parent</h2><p>Find Bible study challenges, serving opportunities, and event info.</p></a>
+                <a href="/helper" class="card helper"><div class="icon">🤲</div><h2>I am a Helper</h2><p>Find serving opportunities, ways to bless the ministry, and event info.</p></a>
+            </div>
+        </div>
+    </div>
+
+    <script is:inline>
+        const step1 = document.getElementById('step-1');
+        const step2Info = document.getElementById('step-2-info');
+        const subtitle = document.getElementById('dynamic-subtitle');
+        
+        function showInfoMenu() { 
+            step1.style.display = 'none'; 
+            step2Info.style.display = 'block'; 
+            subtitle.innerText = "Select your information hub below."; 
+        }
+        
+        function goBack() { 
+            step2Info.style.display = 'none'; 
+            step1.style.display = 'flex'; 
+            subtitle.innerText = "Welcome! Why are you here today?"; 
+        }
+    </script>
+</body>
 </html>

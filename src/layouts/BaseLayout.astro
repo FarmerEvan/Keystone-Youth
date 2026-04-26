@@ -1,0 +1,50 @@
+---
+// src/layouts/BaseLayout.astro
+const { title, backLink, backText, accentColor = "#fb923c" } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{title} | Keystone Youth</title>
+    <style define:vars={{ accentColor }}>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            color: #ffffff;
+            min-height: 100vh;
+        }
+        .container { max-width: 1000px; margin: 0 auto; padding: 2rem; }
+        
+        .nav { margin-bottom: 2rem; display: flex; gap: 15px; }
+        .nav a { color: #94a3b8; text-decoration: none; transition: color 0.3s; font-size: 1rem; cursor: pointer; }
+        .nav a:hover { color: var(--accentColor); }
+        
+        .header { text-align: center; margin-bottom: 3rem; }
+        .header h1 { font-size: 3rem; color: var(--accentColor); margin: 0 0 1rem 0; }
+        .header p { color: #cbd5e1; font-size: 1.1rem; line-height: 1.6; max-width: 700px; margin: 0 auto; }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        {backLink && (
+            <div class="nav">
+                <a href={backLink}>← Back to {backText}</a>
+            </div>
+        )}
+        <slot />
+    </div>
+</body>
+</html>

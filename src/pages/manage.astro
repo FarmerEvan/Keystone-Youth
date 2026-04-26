@@ -1,0 +1,1046 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import AdminDashboard from '../components/manage/AdminDashboard.astro';
+import AdminRoom from '../components/manage/AdminRoom.astro';
+import AdminModals from '../components/manage/AdminModals.astro';
+import DatabaseItem from '../components/manage/DatabaseItem.astro';
+
+const scriptAppUrl = import.meta.env.PUBLIC_SCRIPT_URL;
+const eventsCsv = import.meta.env.PUBLIC_EVENTS_CSV_URL;
+const lessonsCsv = import.meta.env.PUBLIC_LESSONS_CSV_URL;
+const kidsCsv = import.meta.env.PUBLIC_KIDS_CSV_URL;
+const feedbackCsv = import.meta.env.PUBLIC_FEEDBACK_CSV_URL;
+const oppsCsv = import.meta.env.PUBLIC_OPPORTUNITIES_CSV_URL;
+const appsCsv = import.meta.env.PUBLIC_APPLICATIONS_CSV_URL;
+const prayersCsv = import.meta.env.PUBLIC_PRAYERS_CSV_URL;
+const foodCsv = import.meta.env.PUBLIC_FOOD_CSV_URL; // NEW
+---
+
+<BaseLayout title="Management" backLink="/" backText="Home" accentColor="#ef4444">
+    
+    <div id="login-screen" class="login-overlay">
+        <div class="login-card">
+            <h2>Admin Login</h2>
+            <input type="password" id="admin-pass" placeholder="Password" onkeypress="if(event.key === 'Enter') document.getElementById('login-btn').click()">
+            <button id="login-btn">Login</button>
+        </div>
+    </div>
+
+    <div class="manage-wrapper" id="main-content" style="display: none;">
+        <header id="main-header">
+            <h1>Ministry Command</h1>
+            <p>Database & Resource Management</p>
+        </header>
+
+        <AdminDashboard />
+        <AdminRoom />
+        
+        <AdminModals />
+        <DatabaseItem />
+    </div>
+
+</BaseLayout>
+
+<style is:global>
+    .manage-wrapper { width: 100%; max-width: 1400px; margin: 0 auto; padding: 1rem; flex-direction: column; gap: 2rem; box-sizing: border-box; }
+    header h1 { font-size: 2.5rem; color: #ef4444; margin: 0; text-align: center; }
+    header p { color: #94a3b8; text-align: center; font-size: 0.9rem; margin-top: 5px; }
+    .admin-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; width: 100%; align-items: start; }
+    .dashboard-card { background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 1.5rem; backdrop-filter: blur(10px); display: flex; flex-direction: column; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+    .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+    .card-header h3 { margin: 0; font-size: 1.3rem; }
+    .icon-btn { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255,255,255,0.2); color: white; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; }
+    .icon-btn:hover { background: rgba(255, 255, 255, 0.15); transform: scale(1.05); }
+    .preview-list { display: flex; flex-direction: column; gap: 10px; }
+    .expand-btn { background: transparent; border: 1px dashed rgba(255,255,255,0.2); color: #94a3b8; padding: 12px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold; margin-top: 10px; transition: all 0.2s; }
+    .expand-btn:hover { background: rgba(255,255,255,0.05); color: white; border-color: white; }
+    .login-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #0f172a; z-index: 10000; display: flex; align-items: center; justify-content: center; }
+    .login-card { text-align: center; width: 100%; max-width: 320px; background: #1e293b; padding: 2.5rem 2rem; border-radius: 16px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 15px 35px rgba(0,0,0,0.5); }
+    .login-card h2 { margin-top: 0; margin-bottom: 20px; color: #f8fafc; }
+    .login-card button { background: #ef4444; color: white; width: 100%; padding: 12px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; transition: background 0.2s; }
+</style>
+
+<script is:inline id="manage-data" data-script-url={scriptAppUrl} data-events-csv={eventsCsv} data-lessons-csv={lessonsCsv} data-kids-csv={kidsCsv} data-feedback-csv={feedbackCsv} data-opps-csv={oppsCsv} data-apps-csv={appsCsv} data-prayers-csv={prayersCsv} data-food-csv={foodCsv}>
+    
+    function initManageDashboard() {
+        const configElement = document.getElementById('manage-data');
+        if (!configElement || !document.getElementById('login-screen')) return; 
+        
+        const config = configElement.dataset;
+        window.globalData = { kids: [], upcoming: [], past: [], lessons: [], feedback: [], opportunities: [], applications: [], prayers: [], food: [] }; 
+
+        const todayStr = new Date().toDateString();
+        function initAuth() {
+            if (localStorage.getItem('keystone_admin_auth') === todayStr) {
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('main-content').style.display = 'flex';
+                window.refresh();
+            } else {
+                document.getElementById('login-screen').style.display = 'flex';
+                document.getElementById('main-content').style.display = 'none';
+            }
+        }
+
+        const loginBtn = document.getElementById('login-btn');
+        if (loginBtn) {
+            loginBtn.onclick = () => {
+                if (document.getElementById('admin-pass').value === 'keystone') {
+                    localStorage.setItem('keystone_admin_auth', todayStr);
+                    document.getElementById('login-screen').style.display = 'none';
+                    document.getElementById('main-content').style.display = 'flex';
+                    window.refresh();
+                } else { alert('Incorrect password.'); }
+            };
+        }
+
+        function formatDate(raw) {
+            if (!raw) return '';
+            if (raw.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                const p = raw.split('-');
+                const d = new Date(p[0], p[1]-1, p[2]);
+                return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+            }
+            try {
+                const d = new Date(raw);
+                if (!isNaN(d)) return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+            } catch(e) {}
+            return raw;
+        }
+
+        function formatTime(raw) {
+            if (!raw) return '';
+            const str = raw.trim();
+            const match = str.match(/(\d{1,2}):(\d{2})(?::\d{2})?\s*(AM|PM|am|pm)?/i);
+            if (match) {
+                let h = parseInt(match[1], 10);
+                let m = match[2];
+                let ampm = match[3] ? match[3].toLowerCase() : null;
+                if (!ampm) { ampm = h >= 12 ? 'pm' : 'am'; h = h % 12 || 12; }
+                return `${h}:${m}${ampm}`;
+            }
+            return str;
+        }
+
+        function convertToInputTime(raw) {
+            if (!raw) return '';
+            const str = raw.trim();
+            const match = str.match(/(\d{1,2}):(\d{2})(?::\d{2})?\s*(AM|PM|am|pm)?/i);
+            if (match) {
+                let h = parseInt(match[1], 10);
+                let m = match[2];
+                let ampm = match[3] ? match[3].toLowerCase() : null;
+                if (ampm === 'pm' && h < 12) h += 12;
+                if (ampm === 'am' && h === 12) h = 0;
+                return `${h.toString().padStart(2, '0')}:${m}`;
+            }
+            return '';
+        }
+
+        function getEventTimestamp(dateStr, timeStr, isEnd = false) {
+            if (!dateStr) return 0;
+            let d = new Date();
+            if (dateStr.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                const p = dateStr.split('-');
+                d = new Date(p[0], p[1]-1, p[2]);
+            } else {
+                d = new Date(dateStr);
+                if (isNaN(d)) return 0;
+            }
+            if (timeStr) {
+                const match = timeStr.trim().match(/(\d{1,2}):(\d{2})(?::\d{2})?\s*(AM|PM|am|pm)?/i);
+                if (match) {
+                    let h = parseInt(match[1], 10);
+                    let m = parseInt(match[2], 10);
+                    let ampm = match[3] ? match[3].toLowerCase() : null;
+                    if (ampm === 'pm' && h < 12) h += 12;
+                    if (ampm === 'am' && h === 12) h = 0;
+                    d.setHours(h, m, 0, 0);
+                } else { 
+                    if (isEnd) d.setHours(23, 59, 59, 999); else d.setHours(0,0,0,0);
+                }
+            } else { 
+                if (isEnd) d.setHours(23, 59, 59, 999); else d.setHours(0,0,0,0);
+            }
+            return d.getTime();
+        }
+
+        function parseCsvRow(row, expectedLength) {
+            const c = []; let inQuotes = false; let current = '';
+            for (let i = 0; i < row.length; i++) {
+                const char = row[i];
+                if (char === '"') inQuotes = !inQuotes;
+                else if (char === ',' && !inQuotes) { c.push(current); current = ''; }
+                else current += char;
+            }
+            c.push(current);
+            const mapped = c.map(s => s.replace(/^"|"$/g, '').trim());
+            while(mapped.length < expectedLength) mapped.push('');
+            return mapped;
+        }
+
+        window.openModal = (id, isEdit = false) => { 
+            if (!isEdit) {
+                const modal = document.getElementById(id);
+                if (modal) {
+                    const inputs = modal.querySelectorAll('input:not([type="button"]):not([type="submit"]):not([type="checkbox"]):not([type="hidden"]), textarea');
+                    inputs.forEach(i => i.value = '');
+                    const checkboxes = modal.querySelectorAll('input[type="checkbox"]');
+                    checkboxes.forEach(c => c.checked = false);
+                    const hiddenIds = modal.querySelectorAll('input[type="hidden"]');
+                    hiddenIds.forEach(h => h.value = '');
+                }
+            }
+            document.getElementById(id).style.display = 'flex'; 
+            document.body.style.overflow = 'hidden'; 
+        };
+
+        window.closeModal = (id) => { 
+            document.getElementById(id).style.display = 'none'; 
+            document.body.style.overflow = ''; 
+        };
+
+        window.openViewDetailsModal = (title, links, feedbackTag, applicationsArr = null) => {
+            document.getElementById('view-details-title').innerText = `${title}`;
+            
+            const linkSection = document.getElementById('links-section');
+            const linkContainer = document.getElementById('view-links-container');
+            const validLinks = links ? links.filter(l => l.url && l.url.trim() !== '') : [];
+            
+            if (validLinks.length === 0) {
+                if(linkSection) linkSection.style.display = 'none';
+            } else {
+                if(linkSection) linkSection.style.display = 'block';
+                linkContainer.innerHTML = '';
+                validLinks.forEach(link => {
+                    linkContainer.innerHTML += `
+                        <a href="${link.url}" target="_blank" style="display: flex; align-items: center; gap: 15px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: ${link.color || 'white'}; text-decoration: none; padding: 12px 15px; border-radius: 8px; font-weight: bold; transition: all 0.2s;">
+                            <span style="font-size: 1.5rem;">${link.icon || '🔗'}</span> <span>${link.label}</span>
+                        </a>
+                    `;
+                });
+            }
+
+            const appsHeader = document.getElementById('apps-header');
+            const appsContainer = document.getElementById('view-apps-container');
+            if (applicationsArr && applicationsArr.length > 0) {
+                if(appsHeader) appsHeader.style.display = 'block';
+                if(appsContainer) appsContainer.style.display = 'flex';
+                if(appsContainer) appsContainer.innerHTML = '';
+                applicationsArr.forEach(app => {
+                    appsContainer.innerHTML += `
+                        <div style="background: rgba(255,255,255,0.05); padding: 10px; border-radius: 6px; border-left: 3px solid ${app.color};">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                <strong style="color: #fff;">${app.title}</strong>
+                                <span style="font-size: 0.75rem; color: ${app.color}; font-weight: bold;">${app.status}</span>
+                            </div>
+                            <span style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 5px; display: block;">${app.contact}</span>
+                            <p style="margin: 5px 0 0 0; color: #cbd5e1; font-size: 0.85rem; white-space: pre-wrap;">${app.message}</p>
+                        </div>
+                    `;
+                });
+            } else {
+                if(appsHeader) appsHeader.style.display = 'none';
+                if(appsContainer) appsContainer.style.display = 'none';
+            }
+
+            const fbSection = document.getElementById('feedback-section');
+            const fbContainer = document.getElementById('view-feedback-container');
+            
+            if (!feedbackTag) {
+                if(fbSection) fbSection.style.display = 'none';
+            } else {
+                if(fbSection) fbSection.style.display = 'block';
+                fbContainer.innerHTML = '';
+                const matchingFb = window.globalData.feedback.filter(fb => fb.title.includes(feedbackTag));
+                if (matchingFb.length === 0) {
+                    fbContainer.innerHTML = '<p style="color:#94a3b8; font-size:0.85rem; margin:0; text-align:center;">No feedback submitted yet.</p>';
+                } else {
+                    matchingFb.forEach(fb => {
+                        fbContainer.innerHTML += `
+                            <div style="background: rgba(255,255,255,0.05); padding: 10px; border-radius: 6px; border-left: 3px solid #a855f7;">
+                                <span style="font-size: 0.75rem; color: #94a3b8;">${fb.subtitle}</span>
+                                <p style="margin: 5px 0 0 0; color: #cbd5e1; font-size: 0.85rem; white-space: pre-wrap;">${fb.rawText}</p>
+                            </div>
+                        `;
+                    });
+                }
+            }
+
+            document.getElementById('view-details-modal').style.display = 'flex';
+        };
+
+        window.refresh = async () => {
+            const fetchT = async (url) => { 
+                if(!url) return ""; 
+                const res = await fetch(`${url}${url.includes('?') ? '&' : '?'}t=${Date.now()}`); 
+                return await res.text(); 
+            };
+            
+            window.globalData = { kids: [], upcoming: [], past: [], lessons: [], feedback: [], opportunities: [], applications: [], prayers: [], food: [] };
+            
+            try {
+                const [ev, les, kids, fb, opps, apps, prayers, food] = await Promise.all([
+                    fetchT(config.eventsCsv), fetchT(config.lessonsCsv), fetchT(config.kidsCsv), 
+                    fetchT(config.feedbackCsv), fetchT(config.oppsCsv), fetchT(config.appsCsv),
+                    fetchT(config.prayersCsv), fetchT(config.foodCsv)
+                ]);
+                
+                parseFeedback(fb); 
+                parseApplications(apps); 
+                parsePrayers(prayers); 
+                
+                parseKids(kids);
+                parseEvents(ev);
+                parseLessons(les);
+                parseOpportunities(opps); 
+                parseFood(food);
+                
+            } catch (error) {
+                console.error("Error fetching admin data:", error);
+            }
+        };
+
+        function createDbItem(title, subtitle, detailsHtml, color, onEdit, onDelete, linksArray = [], feedbackTag = null, applicationsArr = null) {
+            const template = document.getElementById('db-item-template');
+            const clone = template.content.cloneNode(true);
+            const wrapper = clone.querySelector('.db-item');
+            wrapper.style.borderLeft = `4px solid ${color}`;
+            
+            clone.querySelector('.t-title').innerText = title;
+            clone.querySelector('.t-subtitle').innerHTML = subtitle;
+            clone.querySelector('.t-details').innerHTML = detailsHtml;
+            
+            const validLinks = linksArray ? linksArray.filter(link => link.url && link.url.trim() !== '') : [];
+            const hasApps = applicationsArr && applicationsArr.length > 0;
+            
+            if (validLinks.length > 0 || feedbackTag || hasApps) {
+                const viewBtn = clone.querySelector('.t-view');
+                viewBtn.style.display = 'block';
+                
+                if (hasApps) {
+                    viewBtn.style.background = '#10b981';
+                    viewBtn.innerText = `Apps (${applicationsArr.length})`;
+                }
+
+                viewBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    window.openViewDetailsModal(title, linksArray, feedbackTag, applicationsArr);
+                };
+            }
+
+            if (onEdit) { clone.querySelector('.t-edit').onclick = onEdit; } 
+            else { clone.querySelector('.t-edit').style.display = 'none'; }
+            
+            clone.querySelector('.t-delete').onclick = onDelete;
+            if(!onDelete) { clone.querySelector('.t-delete').style.display = 'none'; }
+
+            return clone;
+        }
+
+        // --- PARSERS ---
+        function parseKids(csv) {
+            if(!csv) return;
+            const rows = csv.split('\n').slice(1);
+            const dashList = document.getElementById('dash-kids'); 
+            if(dashList) dashList.innerHTML = '';
+            
+            let parsedKids = [];
+            rows.forEach(row => {
+                if(!row.trim()) return;
+                const c = parseCsvRow(row, 10);
+                if(!c[4]) return; 
+                
+                const id = c[0];
+                const filled = (c[6] || '').toUpperCase() === 'TRUE';
+                const lessonLink = c[7] || ''; 
+                const photoLink = c[8] || '';
+                const rawOverview = c[9] || '';
+                const displayOverview = rawOverview.replace(/\\n/g, '<br>');
+                const feedbackTag = `[ID:${id}]`;
+                
+                const links = [
+                    { url: lessonLink, label: "Lesson Materials", icon: "📺", color: "#38bdf8" },
+                    { url: photoLink, label: "Shared Photos", icon: "📸", color: "#10b981" }
+                ];
+
+                const statusBubble = filled 
+                    ? `<span style="background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; color: #10b981; font-size: 0.65rem; padding: 2px 6px; border-radius: 12px; margin-left: 8px; vertical-align: middle; font-weight: bold; letter-spacing: 0.5px;">FILLED</span>`
+                    : `<span style="background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; color: #ef4444; font-size: 0.65rem; padding: 2px 6px; border-radius: 12px; margin-left: 8px; vertical-align: middle; font-weight: bold; letter-spacing: 0.5px;">OPEN</span>`;
+
+                const itemObj = { 
+                    rawDate: c[1], timeStart: c[2], timeEnd: c[3], title: formatDate(c[1]), 
+                    subtitle: `${c[4]} ${statusBubble}`, 
+                    color: '#06b6d4', searchable: `${c[1]} ${c[4]} ${c[5]} ${displayOverview}`,
+                    details: `
+                        <div class="detail-group"><label>Volunteer</label><p>${c[5] || 'None'}</p></div>
+                        <div class="detail-group"><label>Status</label><p>${filled ? 'Reserved' : 'Open'}</p></div>
+                        ${displayOverview ? `<div class="detail-group" style="grid-column:1/-1"><label>Lesson Overview</label><div class="rich-text" style="color: #cbd5e1; font-size: 0.85rem;">${displayOverview}</div></div>` : ''}
+                    `,
+                    onEdit: () => { 
+                        document.getElementById('cc-id').value = id; 
+                        document.getElementById('cc-date').value = c[1]; 
+                        document.getElementById('cc-time-start').value = convertToInputTime(c[2]); 
+                        document.getElementById('cc-time-end').value = convertToInputTime(c[3]); 
+                        document.getElementById('cc-service').value = c[4]; 
+                        document.getElementById('cc-name').value = c[5]; 
+                        document.getElementById('cc-filled').checked = filled; 
+                        document.getElementById('cc-lesson').value = lessonLink; 
+                        document.getElementById('cc-photo').value = photoLink; 
+                        document.getElementById('cc-overview').value = rawOverview.replace(/\\n/g, '\n'); 
+                        window.openModal('cc-modal', true); 
+                    },
+                    onDelete: () => window.deleteItem('deleteVolunteerSpot', id),
+                    linksArray: links,
+                    feedbackTag: feedbackTag,
+                    timestamp: getEventTimestamp(c[1], c[2])
+                };
+                parsedKids.push(itemObj);
+            });
+
+            window.globalData.kids = parsedKids.sort((a,b) => a.timestamp - b.timestamp); 
+
+            if(dashList) {
+                if (window.globalData.kids.length <= 3) { 
+                    window.globalData.kids.forEach(itemObj => dashList.appendChild(createDbItem(itemObj.title, itemObj.subtitle, itemObj.details, itemObj.color, itemObj.onEdit, itemObj.onDelete, itemObj.linksArray, itemObj.feedbackTag)));
+                } else {
+                    window.globalData.kids.slice(0, 3).forEach(itemObj => dashList.appendChild(createDbItem(itemObj.title, itemObj.subtitle, itemObj.details, itemObj.color, itemObj.onEdit, itemObj.onDelete, itemObj.linksArray, itemObj.feedbackTag)));
+                }
+                const btn = document.getElementById('btn-room-kids');
+                if(btn) {
+                    btn.style.display = window.globalData.kids.length > 3 ? 'block' : 'none';
+                    btn.innerText = `Show All (${window.globalData.kids.length}) ▾`;
+                }
+            }
+        }
+
+        function parseEvents(csv) {
+            if(!csv) return;
+            const rows = csv.split('\n').slice(1);
+            const dashUp = document.getElementById('dash-upcoming');
+            const dashPa = document.getElementById('dash-past');
+            if(dashUp) dashUp.innerHTML = '';
+            if(dashPa) dashPa.innerHTML = '';
+            
+            let parsedEvents = [];
+            const now = Date.now();
+
+            rows.forEach(row => {
+                if(!row.trim()) return;
+                const c = parseCsvRow(row, 11);
+                if(!c[4]) return; 
+                
+                const id = c[0]; 
+                const rawDesc = c[5];
+                const displayDesc = rawDesc.replace(/\\n/g, '<br>');
+                const endTimestamp = getEventTimestamp(c[1], c[3] || c[2], true);
+                const isPast = now > endTimestamp; 
+                const timeString = c[3] ? `${formatTime(c[2])} - ${formatTime(c[3])}` : formatTime(c[2]);
+                const feedbackTag = `[ID:${id}]`; 
+
+                const links = [
+                    { url: c[10], label: "Leader Packet", icon: "🛡️", color: "#ef4444" },
+                    { url: c[9], label: "Student Handout", icon: "✍️", color: "#facc15" },
+                    { url: c[8], label: "Take-Home Brochure", icon: "📄", color: "#fb923c" },
+                    { url: c[7], label: "Photo Album", icon: "📸", color: "#38bdf8" }
+                ];
+
+                const ev = {
+                    rawDate: c[1], title: c[4], subtitle: formatDate(c[1]), color: isPast ? '#94a3b8' : '#fb923c', searchable: `${c[4]} ${c[1]} ${displayDesc}`,
+                    details: `<div class="detail-group" style="grid-column:1/-1"><label>Description</label><div class="rich-text" style="color: #cbd5e1; font-size: 0.85rem;">${displayDesc}</div></div><div class="detail-group"><label>Time</label><p>${timeString}</p></div>`,
+                    isPast: isPast,
+                    timestamp: getEventTimestamp(c[1], c[2]),
+                    feedbackTag: feedbackTag,
+                    onEdit: () => { 
+                        document.getElementById('ev-id').value = id; 
+                        document.getElementById('ev-title').value = c[4]; 
+                        document.getElementById('ev-date').value = c[1]; 
+                        document.getElementById('ev-time-start').value = convertToInputTime(c[2]); 
+                        document.getElementById('ev-time-end').value = convertToInputTime(c[3]); 
+                        document.getElementById('ev-desc').value = rawDesc.replace(/\\n/g, '\n'); 
+                        document.getElementById('ev-photo').value = c[7] || ''; 
+                        document.getElementById('ev-brochure').value = c[8] || ''; 
+                        document.getElementById('ev-handout').value = c[9] || ''; 
+                        document.getElementById('ev-leader').value = c[10] || ''; 
+                        document.getElementById('ev-high').checked = (c[6] || '').toUpperCase() === "TRUE"; 
+                        window.openModal('ev-modal', true); 
+                    },
+                    onDelete: () => window.deleteItem('deleteEvent', id), 
+                    linksArray: links
+                };
+                parsedEvents.push(ev);
+            });
+
+            window.globalData.upcoming = parsedEvents.filter(e => !e.isPast).sort((a,b) => a.timestamp - b.timestamp);
+            window.globalData.past = parsedEvents.filter(e => e.isPast).sort((a,b) => b.timestamp - a.timestamp);
+
+            if(dashUp) {
+                window.globalData.upcoming.slice(0,3).forEach(ev => dashUp.appendChild(createDbItem(ev.title, ev.subtitle, ev.details, ev.color, ev.onEdit, ev.onDelete, ev.linksArray, ev.feedbackTag)));
+                const btnUp = document.getElementById('btn-room-upcoming');
+                if(btnUp) { btnUp.style.display = window.globalData.upcoming.length > 3 ? 'block' : 'none'; btnUp.innerText = `Show All (${window.globalData.upcoming.length}) ▾`; }
+            }
+
+            if(dashPa) {
+                window.globalData.past.slice(0,3).forEach(ev => dashPa.appendChild(createDbItem(ev.title, ev.subtitle, ev.details, ev.color, ev.onEdit, ev.onDelete, ev.linksArray, ev.feedbackTag)));
+                const btnPa = document.getElementById('btn-room-past');
+                if(btnPa) { btnPa.style.display = window.globalData.past.length > 3 ? 'block' : 'none'; btnPa.innerText = `Show All (${window.globalData.past.length}) ▾`; }
+            }
+        }
+
+        function parseLessons(csv) {
+            if(!csv) return;
+            const rows = csv.split('\n').slice(1).reverse();
+            const dashLes = document.getElementById('dash-lessons'); 
+            if(dashLes) dashLes.innerHTML = '';
+            
+            rows.forEach(row => {
+                if(!row.trim()) return;
+                const c = parseCsvRow(row, 6); 
+                if(!c[2]) return; 
+                
+                const rawDesc = c[5] || '';
+                const displayDesc = rawDesc.replace(/\\n/g, '<br>');
+
+                const links = [{ url: `https://youtube.com/watch?v=${c[4]}`, label: "Watch on YouTube", icon: "▶️", color: "#ef4444" }];
+
+                const itemObj = {
+                    rawDate: c[0], title: c[2], subtitle: `${formatDate(c[0])} - ${formatDate(c[1])}`, color: '#38bdf8', searchable: `${c[2]} ${c[0]} ${c[4]} ${displayDesc}`,
+                    details: `
+                        <div class="detail-group"><label>YouTube ID</label><p>${c[4]}</p></div>
+                        ${displayDesc ? `<div class="detail-group" style="grid-column:1/-1"><label>Description</label><div class="rich-text" style="color: #cbd5e1; font-size: 0.85rem;">${displayDesc}</div></div>` : ''}
+                    `,
+                    onEdit: () => {
+                        document.getElementById('les-start-date').value = c[0]; 
+                        document.getElementById('les-end-date').value = c[1]; 
+                        document.getElementById('les-title').value = c[2]; 
+                        document.getElementById('les-scripture').value = c[3]; 
+                        document.getElementById('les-youtube').value = c[4]; 
+                        document.getElementById('les-desc').value = rawDesc.replace(/\\n/g, '\n'); 
+                        window.openModal('les-modal', true); 
+                    },
+                    onDelete: () => window.deleteItem('deleteLesson', c[2]),
+                    linksArray: links
+                };
+                
+                window.globalData.lessons.push(itemObj);
+                if (window.globalData.lessons.length <= 3 && dashLes) dashLes.appendChild(createDbItem(itemObj.title, itemObj.subtitle, itemObj.details, itemObj.color, itemObj.onEdit, itemObj.onDelete, itemObj.linksArray));
+            });
+            
+            const btnLes = document.getElementById('btn-room-lessons');
+            if(btnLes) {
+                btnLes.style.display = window.globalData.lessons.length > 3 ? 'block' : 'none';
+                btnLes.innerText = `Show All (${window.globalData.lessons.length}) ▾`;
+            }
+        }
+
+        function parseFeedback(csv) {
+            if(!csv) return;
+            const rows = csv.split('\n').slice(1).reverse(); 
+            const dashList = document.getElementById('dash-feedback'); 
+            if(dashList) dashList.innerHTML = '';
+            
+            let parsedFb = [];
+
+            rows.forEach(row => {
+                if(!row.trim()) return;
+                const c = parseCsvRow(row, 3);
+                if(!c[1]) return;
+                
+                let dateObj = new Date();
+                if(c[0]) { dateObj = new Date(c[0]); }
+                const dateRaw = dateObj.toLocaleDateString();
+                
+                const itemObj = { 
+                    rawDate: dateObj.toISOString().split('T')[0], title: c[1], subtitle: dateRaw, color: '#a855f7', searchable: `${c[1]} ${c[2]}`,
+                    rawText: c[2], 
+                    details: `<div class="detail-group"><label>Feedback</label><p style="white-space: pre-wrap;">${c[2]}</p></div>`,
+                    onEdit: null, onDelete: null, linksArray: [], timestamp: dateObj.getTime()
+                };
+                
+                parsedFb.push(itemObj);
+            });
+            
+            window.globalData.feedback = parsedFb.sort((a,b) => b.timestamp - a.timestamp);
+            
+            if (window.globalData.feedback.length <= 3 && dashList) { 
+                window.globalData.feedback.forEach(fb => dashList.appendChild(createDbItem(fb.title, fb.subtitle, fb.details, fb.color, null, null, []))); 
+            } else if (dashList) {
+                window.globalData.feedback.slice(0,3).forEach(fb => dashList.appendChild(createDbItem(fb.title, fb.subtitle, fb.details, fb.color, null, null, []))); 
+            }
+
+            const btn = document.getElementById('btn-room-feedback');
+            if(btn) {
+                btn.style.display = window.globalData.feedback.length > 3 ? 'block' : 'none';
+                btn.innerText = `Show All (${window.globalData.feedback.length}) ▾`;
+            }
+        }
+
+        function parseOpportunities(csv) {
+            if(!csv) return;
+            const rows = csv.split('\n').slice(1);
+            const dashList = document.getElementById('dash-opportunities');
+            if(dashList) dashList.innerHTML = '';
+            
+            let parsedOpps = [];
+            rows.forEach(row => {
+                if(!row.trim()) return;
+                const c = parseCsvRow(row, 9); 
+                if(!c[1]) return; 
+                
+                const id = c[0];
+                const isActive = (c[7] || '').toUpperCase() === 'TRUE';
+                
+                const targets = [];
+                if((c[3]||'').toUpperCase() === 'TRUE') targets.push('Parents');
+                if((c[4]||'').toUpperCase() === 'TRUE') targets.push('Students');
+                if((c[5]||'').toUpperCase() === 'TRUE') targets.push('Leaders');
+                if((c[6]||'').toUpperCase() === 'TRUE') targets.push('Helpers');
+                
+                const roleApps = window.globalData.applications.filter(app => app.roleTitle === c[1]);
+
+                const itemObj = {
+                    id: id,
+                    rawDate: new Date().toISOString(), 
+                    title: c[1],
+                    subtitle: isActive ? "🟢 Actively Recruiting" : "🔴 Closed",
+                    color: '#a855f7',
+                    searchable: `${c[1]} ${c[2]}`,
+                    details: `
+                        <div class="detail-group"><label>Displayed To</label><p>${targets.join(', ') || 'Nobody'}</p></div>
+                        <div class="detail-group" style="grid-column:1/-1"><label>Description</label><div class="rich-text" style="color: #cbd5e1; font-size: 0.85rem;">${c[2].replace(/\\n/g, '<br>')}</div></div>
+                    `,
+                    onEdit: () => {
+                        document.getElementById('opp-id').value = id;
+                        document.getElementById('opp-title').value = c[1];
+                        document.getElementById('opp-desc').value = c[2].replace(/\\n/g, '\n');
+                        document.getElementById('opp-parents').checked = (c[3]||'').toUpperCase() === 'TRUE';
+                        document.getElementById('opp-students').checked = (c[4]||'').toUpperCase() === 'TRUE';
+                        document.getElementById('opp-leaders').checked = (c[5]||'').toUpperCase() === 'TRUE';
+                        document.getElementById('opp-helpers').checked = (c[6]||'').toUpperCase() === 'TRUE';
+                        document.getElementById('opp-active').checked = isActive;
+                        document.getElementById('opp-questions').value = (c[8]||'').replace(/\\n/g, '\n'); 
+                        window.openModal('opp-modal', true);
+                    },
+                    onDelete: () => window.deleteItem('deleteOpportunity', id),
+                    linksArray: [],
+                    applicationsArr: roleApps 
+                };
+                parsedOpps.push(itemObj);
+            });
+            
+            window.globalData.opportunities = parsedOpps;
+            
+            if(dashList) {
+                parsedOpps.slice(0,3).forEach(opp => dashList.appendChild(createDbItem(opp.title, opp.subtitle, opp.details, opp.color, opp.onEdit, opp.onDelete, opp.linksArray, null, opp.applicationsArr)));
+                const btn = document.getElementById('btn-room-opportunities');
+                if(btn) {
+                    btn.style.display = parsedOpps.length > 3 ? 'block' : 'none';
+                    btn.innerText = `Show All (${parsedOpps.length}) ▾`;
+                }
+            }
+        }
+
+        function parseApplications(csv) {
+            if(!csv) return;
+            const rows = csv.split('\n').slice(1).reverse(); 
+            const dashList = document.getElementById('dash-applications');
+            if(dashList) dashList.innerHTML = '';
+            
+            let parsedApps = [];
+            rows.forEach(row => {
+                if(!row.trim()) return;
+                const c = parseCsvRow(row, 6);
+                if(!c[1]) return; 
+                
+                const timestamp = c[0];
+                const status = c[5] || 'New';
+                
+                let color = '#3b82f6'; 
+                if (status === 'Contacted') color = '#f59e0b'; 
+                if (status === 'Approved') color = '#10b981'; 
+                
+                const itemObj = {
+                    rawDate: timestamp,
+                    title: c[1],
+                    subtitle: `${c[3]} • Status: ${status}`,
+                    roleTitle: c[3], 
+                    color: color,
+                    status: status, 
+                    contact: c[2], 
+                    message: c[4].replace(/\\n/g, '\n'), 
+                    searchable: `${c[1]} ${c[2]} ${c[3]}`,
+                    details: `
+                        <div class="detail-group"><label>Contact Info</label><p>${c[2]}</p></div>
+                        <div class="detail-group" style="grid-column:1/-1"><label>Application Answers</label><p style="white-space: pre-wrap;">${c[4].replace(/\\n/g, '\n')}</p></div>
+                    `,
+                    onEdit: () => {
+                        const newStatus = prompt("Update Status (Type exactly: New, Contacted, or Approved):", status);
+                        if (newStatus && ['New', 'Contacted', 'Approved'].includes(newStatus)) {
+                            updateAppStatus(timestamp, c[1], newStatus);
+                        } else if (newStatus) {
+                            alert("Action canceled. Please type exactly 'New', 'Contacted', or 'Approved'.");
+                        }
+                    },
+                    onDelete: null, 
+                    linksArray: []
+                };
+                parsedApps.push(itemObj);
+            });
+            
+            window.globalData.applications = parsedApps;
+            
+            if(dashList) {
+                parsedApps.slice(0,3).forEach(app => dashList.appendChild(createDbItem(app.title, app.subtitle, app.details, app.color, app.onEdit, app.onDelete)));
+                const btn = document.getElementById('btn-room-applications');
+                if(btn) {
+                    btn.style.display = parsedApps.length > 3 ? 'block' : 'none';
+                    btn.innerText = `Show All (${parsedApps.length}) ▾`;
+                }
+            }
+        }
+
+        function parsePrayers(csv) {
+            if(!csv) return;
+            const rows = csv.split('\n').slice(1).reverse(); 
+            const dashList = document.getElementById('dash-prayers');
+            if(dashList) dashList.innerHTML = '';
+            
+            let parsedPrayers = [];
+            rows.forEach(row => {
+                if(!row.trim()) return;
+                const c = parseCsvRow(row, 10);
+                if(!c[1]) return; 
+                
+                const id = c[0];
+                const timestamp = c[1];
+                const type = c[2];
+                const color = type === 'Request' ? '#3b82f6' : '#10b981';
+                
+                const targets = [];
+                if((c[5]||'').toUpperCase() === 'TRUE') targets.push('Team');
+                if((c[6]||'').toUpperCase() === 'TRUE') targets.push('Parents');
+                if((c[7]||'').toUpperCase() === 'TRUE') targets.push('Students');
+                if((c[8]||'').toUpperCase() === 'TRUE') targets.push(`Leaders (${c[9]||'All'})`);
+                
+                const itemObj = {
+                    rawDate: timestamp,
+                    title: `${type === 'Request' ? '🙏' : '🙌'} ${c[3]}`,
+                    subtitle: new Date(timestamp).toLocaleDateString(),
+                    color: color,
+                    searchable: `${c[3]} ${c[4]}`,
+                    details: `
+                        <div class="detail-group"><label>Displayed To</label><p>${targets.join(', ') || 'Nobody'}</p></div>
+                        <div class="detail-group" style="grid-column:1/-1"><label>Details</label><div class="rich-text" style="color: #cbd5e1; font-size: 0.85rem; white-space: pre-wrap;">${c[4].replace(/\\n/g, '\n')}</div></div>
+                    `,
+                    onEdit: null, 
+                    onDelete: () => window.deleteItem('deletePrayer', id),
+                    linksArray: []
+                };
+                parsedPrayers.push(itemObj);
+            });
+            
+            window.globalData.prayers = parsedPrayers;
+            
+            if(dashList) {
+                parsedPrayers.slice(0,3).forEach(prayer => dashList.appendChild(createDbItem(prayer.title, prayer.subtitle, prayer.details, prayer.color, prayer.onEdit, prayer.onDelete)));
+                const btn = document.getElementById('btn-room-prayers');
+                if(btn) {
+                    btn.style.display = parsedPrayers.length > 3 ? 'block' : 'none';
+                    btn.innerText = `Show All (${parsedPrayers.length}) ▾`;
+                }
+            }
+        }
+
+        // --- NEW FOOD PARSER ---
+        function parseFood(csv) {
+            if(!csv) return;
+            const rows = csv.split('\n').slice(1);
+            const dashList = document.getElementById('dash-food');
+            if(dashList) dashList.innerHTML = '';
+            
+            let parsedFood = [];
+            const now = Date.now();
+
+            rows.forEach(row => {
+                if(!row.trim()) return;
+                const c = parseCsvRow(row, 7);
+                if(!c[1]) return; // Require Date
+                
+                const id = c[0];
+                const filled = (c[4] || '').toUpperCase() === 'TRUE';
+                
+                // Expiration Check (Keep active through the end of the day)
+                let d = new Date();
+                if (c[1].match(/^\d{4}-\d{2}-\d{2}$/)) { const p = c[1].split('-'); d = new Date(p[0], p[1]-1, p[2]); } else { d = new Date(c[1]); }
+                d.setHours(23,59,59,999);
+                
+                // If it's a past food spot and it doesn't have feedback yet, color it Orange as a reminder!
+                const isPast = now > d.getTime();
+                let color = '#f59e0b'; // Default Yellow/Orange
+                if (isPast && c[6]) color = '#94a3b8'; // Gray if past and has feedback
+                if (!isPast && filled) color = '#10b981'; // Green if future and filled
+                if (!isPast && !filled) color = '#ef4444'; // Red if future and empty
+                
+                const itemObj = {
+                    rawDate: c[1],
+                    timestamp: d.getTime(), // Use for sorting
+                    title: formatDate(c[1]),
+                    subtitle: filled ? `Filled: ${c[3]}` : `Needed: ${c[2] || 'Anything'}`,
+                    color: color,
+                    searchable: `${c[1]} ${c[2]} ${c[3]} ${c[5]} ${c[6]}`,
+                    details: `
+                        <div class="detail-group"><label>Needed</label><p>${c[2] || 'Anything'}</p></div>
+                        <div class="detail-group"><label>Volunteer</label><p>${c[3] || 'Open'}</p></div>
+                        <div class="detail-group" style="grid-column:1/-1"><label>Served</label><p>${c[5] || 'Not logged yet'}</p></div>
+                        <div class="detail-group" style="grid-column:1/-1"><label>Feedback</label><p style="white-space: pre-wrap;">${c[6] || 'None'}</p></div>
+                    `,
+                    onEdit: () => {
+                        document.getElementById('food-id').value = id;
+                        document.getElementById('food-date').value = c[1];
+                        document.getElementById('food-needed').value = c[2];
+                        document.getElementById('food-name').value = c[3];
+                        document.getElementById('food-filled').checked = filled;
+                        document.getElementById('food-served').value = c[5];
+                        document.getElementById('food-feedback').value = c[6];
+                        window.openModal('food-modal', true);
+                    },
+                    onDelete: () => window.deleteItem('deleteFoodSpot', id),
+                    linksArray: []
+                };
+                parsedFood.push(itemObj);
+            });
+            
+            // Sort: Closest dates at the top
+            window.globalData.food = parsedFood.sort((a,b) => a.timestamp - b.timestamp);
+            
+            if(dashList) {
+                window.globalData.food.slice(0,3).forEach(food => dashList.appendChild(createDbItem(food.title, food.subtitle, food.details, food.color, food.onEdit, food.onDelete)));
+                const btn = document.getElementById('btn-room-food');
+                if(btn) {
+                    btn.style.display = window.globalData.food.length > 3 ? 'block' : 'none';
+                    btn.innerText = `Show All (${window.globalData.food.length}) ▾`;
+                }
+            }
+        }
+
+        async function updateAppStatus(timestamp, name, status) {
+            const params = new URLSearchParams({ action: "updateAppStatus", timestamp: timestamp, name: name, status: status });
+            await fetch(`${config.scriptUrl}?${params.toString()}`, {mode:'no-cors'});
+            setTimeout(window.refresh, 1000);
+        }
+
+        const roomConfig = {
+            'kids': { title: "👦 Children's Church Archive", color: '#06b6d4' },
+            'upcoming': { title: "📅 Upcoming Events Archive", color: '#fb923c' },
+            'past': { title: "🕰️ Past Events Archive", color: '#94a3b8' },
+            'lessons': { title: "📺 Video Lessons Archive", color: '#38bdf8' },
+            'feedback': { title: "💬 Event Feedback Archive", color: '#a855f7' },
+            'opportunities': { title: "🙌 Volunteer Opportunities", color: '#a855f7' },
+            'applications': { title: "📥 Volunteer Applications", color: '#3b82f6' },
+            'prayers': { title: "🙏 Prayer Wall", color: '#3b82f6' }, 
+            'food': { title: "🍕 Food Schedule", color: '#f59e0b' } // NEW
+        };
+
+        window.openRoom = (category) => {
+            document.getElementById('admin-dashboard-view').style.display = 'none';
+            document.getElementById('main-header').style.display = 'none';
+            document.getElementById('admin-room-view').style.display = 'block';
+            
+            document.getElementById('room-title').innerText = roomConfig[category].title;
+            document.getElementById('room-title').style.color = roomConfig[category].color;
+            document.getElementById('room-search').value = ''; 
+            
+            renderRoomData(window.globalData[category]);
+        };
+
+        window.closeRoom = () => {
+            document.getElementById('admin-room-view').style.display = 'none';
+            document.getElementById('admin-dashboard-view').style.display = 'grid';
+            document.getElementById('main-header').style.display = 'block';
+        };
+
+        function renderRoomData(items) {
+            const container = document.getElementById('room-content-container');
+            container.innerHTML = '';
+            
+            const grouped = {};
+            items.forEach(item => {
+                let d = new Date();
+                if (item.rawDate && item.rawDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                    const p = item.rawDate.split('-');
+                    d = new Date(p[0], p[1]-1, p[2]);
+                } else if (item.rawDate) {
+                    d = new Date(item.rawDate);
+                }
+
+                const year = d.getFullYear() || 'TBD';
+                const month = d.toLocaleString('default', { month: 'long' }) || 'Unscheduled';
+                
+                if (!grouped[year]) grouped[year] = {};
+                if (!grouped[year][month]) grouped[year][month] = [];
+                grouped[year][month].push(item);
+            });
+
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+            Object.keys(grouped).sort((a,b) => b-a).forEach(year => {
+                const yearDetails = document.createElement('details');
+                yearDetails.className = 'year-folder search-folder';
+                yearDetails.open = true;
+                yearDetails.innerHTML = `<summary>📁 ${year}</summary>`;
+                
+                const sortedMonths = Object.keys(grouped[year]).sort((a, b) => monthNames.indexOf(b) - monthNames.indexOf(a));
+                
+                sortedMonths.forEach(month => {
+                    const monthDetails = document.createElement('details');
+                    monthDetails.className = 'month-folder search-folder';
+                    monthDetails.open = true;
+                    monthDetails.innerHTML = `<summary>📂 ${month}</summary>`;
+                    
+                    const list = document.createElement('div');
+                    list.style.marginTop = '10px';
+                    
+                    grouped[year][month].sort((a,b) => (b.timestamp || b.timestampStart || 0) - (a.timestamp || a.timestampStart || 0)).forEach(item => {
+                        const node = createDbItem(item.title, item.subtitle, item.details, item.color, item.onEdit, item.onDelete, item.linksArray, item.feedbackTag, item.applicationsArr);
+                        node.setAttribute('data-search', item.searchable.toLowerCase());
+                        node.classList.add('room-item'); 
+                        list.appendChild(node);
+                    });
+                    
+                    monthDetails.appendChild(list);
+                    yearDetails.appendChild(monthDetails);
+                });
+                container.appendChild(yearDetails);
+            });
+        }
+
+        window.searchRoom = () => {
+            const input = document.getElementById('room-search').value.toLowerCase();
+            const items = document.getElementsByClassName('room-item');
+            
+            if (input !== "") { document.querySelectorAll('.search-folder').forEach(d => d.setAttribute('open', 'true')); }
+            
+            for (let i = 0; i < items.length; i++) {
+                const searchableText = items[i].getAttribute('data-search');
+                items[i].style.display = searchableText.includes(input) ? "block" : "none";
+            }
+        };
+
+        window.deleteItem = async (action, val1) => {
+            if(!confirm("Are you sure?")) return;
+            let params = new URLSearchParams({ action: action });
+            if (action === 'deleteLesson') {
+                params.append('title', val1);
+            } else {
+                params.append('id', val1);
+            }
+            await fetch(`${config.scriptUrl}?${params.toString()}`, {mode:'no-cors'});
+            setTimeout(window.refresh, 1000);
+        }
+        
+        const btnSaveCc = document.getElementById('btn-save-cc');
+        if (btnSaveCc) btnSaveCc.onclick = async () => {
+            const formattedOverview = document.getElementById('cc-overview').value.replace(/\n/g, '\\n');
+            const ccId = document.getElementById('cc-id').value; 
+            const params = new URLSearchParams({ 
+                action:"saveVolunteerSpot", 
+                id: ccId,
+                date:document.getElementById('cc-date').value, 
+                timeStart:document.getElementById('cc-time-start').value,
+                timeEnd:document.getElementById('cc-time-end').value,
+                service:document.getElementById('cc-service').value, 
+                name:document.getElementById('cc-name').value, 
+                lesson:document.getElementById('cc-lesson').value,
+                photo:document.getElementById('cc-photo').value,
+                overview:formattedOverview,
+                isFilled:document.getElementById('cc-filled').checked ? "TRUE" : "FALSE" 
+            });
+            await fetch(`${config.scriptUrl}?${params.toString()}`, {mode:'no-cors'}); window.closeModal('cc-modal'); window.refresh();
+        };
+
+        const btnSaveEv = document.getElementById('btn-save-event');
+        if (btnSaveEv) btnSaveEv.onclick = async () => {
+            const formattedDesc = document.getElementById('ev-desc').value.replace(/\n/g, '\\n');
+            const eventId = document.getElementById('ev-id').value; 
+
+            const params = new URLSearchParams({ 
+                action:"saveEvent", 
+                id:eventId,
+                title:document.getElementById('ev-title').value, 
+                date:document.getElementById('ev-date').value, 
+                timeStart:document.getElementById('ev-time-start').value, 
+                timeEnd:document.getElementById('ev-time-end').value, 
+                desc:formattedDesc, 
+                photo:document.getElementById('ev-photo').value, 
+                brochure:document.getElementById('ev-brochure').value, 
+                handout:document.getElementById('ev-handout').value, 
+                leader:document.getElementById('ev-leader').value, 
+                highlight:document.getElementById('ev-high').checked ? "TRUE" : "FALSE"
+            });
+            await fetch(`${config.scriptUrl}?${params.toString()}`, {mode:'no-cors'}); window.closeModal('ev-modal'); window.refresh();
+        };
+
+        const btnSaveLes = document.getElementById('btn-save-lesson');
+        if (btnSaveLes) btnSaveLes.onclick = async () => {
+            const formattedDesc = document.getElementById('les-desc').value.replace(/\n/g, '\\n');
+            const params = new URLSearchParams({ 
+                action:"addLesson", 
+                startDate:document.getElementById('les-start-date').value, 
+                endDate:document.getElementById('les-end-date').value, 
+                title:document.getElementById('les-title').value, 
+                scripture:document.getElementById('les-scripture').value, 
+                youtube:document.getElementById('les-youtube').value, 
+                desc:formattedDesc
+            });
+            await fetch(`${config.scriptUrl}?${params.toString()}`, {mode:'no-cors'}); window.closeModal('les-modal'); window.refresh();
+        };
+
+        const btnSaveOpp = document.getElementById('btn-save-opp');
+        if (btnSaveOpp) btnSaveOpp.onclick = async () => {
+            const formattedDesc = document.getElementById('opp-desc').value.replace(/\n/g, '\\n');
+            const formattedQuestions = document.getElementById('opp-questions').value.replace(/\n/g, '\\n');
+            const oppId = document.getElementById('opp-id').value; 
+
+            const params = new URLSearchParams({ 
+                action: "saveOpportunity", 
+                id: oppId,
+                title: document.getElementById('opp-title').value, 
+                desc: formattedDesc, 
+                forParents: document.getElementById('opp-parents').checked ? "TRUE" : "FALSE",
+                forStudents: document.getElementById('opp-students').checked ? "TRUE" : "FALSE",
+                forLeaders: document.getElementById('opp-leaders').checked ? "TRUE" : "FALSE",
+                forHelpers: document.getElementById('opp-helpers').checked ? "TRUE" : "FALSE",
+                isActive: document.getElementById('opp-active').checked ? "TRUE" : "FALSE",
+                questions: formattedQuestions
+            });
+            await fetch(`${config.scriptUrl}?${params.toString()}`, {mode:'no-cors'}); window.closeModal('opp-modal'); window.refresh();
+        };
+
+        // NEW SAVE FUNCTION FOR FOOD
+        const btnSaveFood = document.getElementById('btn-save-food');
+        if (btnSaveFood) btnSaveFood.onclick = async () => {
+            const foodId = document.getElementById('food-id').value; 
+
+            const params = new URLSearchParams({ 
+                action: "saveFoodSpot", 
+                id: foodId,
+                date: document.getElementById('food-date').value, 
+                needed: document.getElementById('food-needed').value, 
+                name: document.getElementById('food-name').value, 
+                served: document.getElementById('food-served').value, 
+                feedback: document.getElementById('food-feedback').value, 
+                isFilled: document.getElementById('food-filled').checked ? "TRUE" : "FALSE"
+            });
+            await fetch(`${config.scriptUrl}?${params.toString()}`, {mode:'no-cors'}); window.closeModal('food-modal'); window.refresh();
+        };
+
+        initAuth();
+    }
+
+    initManageDashboard();
+
+    if (!window.hasAttachedManageListener) {
+        document.addEventListener('astro:page-load', initManageDashboard);
+        window.hasAttachedManageListener = true;
+    }
+
+</script>

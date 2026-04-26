@@ -1,0 +1,123 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+const lessonsCsv = import.meta.env.PUBLIC_LESSONS_CSV_URL;
+---
+
+<BaseLayout title="Bible Study Archive" backLink="/todays-study" backText="Today's Study" accentColor="#facc15">
+
+    <div class="header" style="text-align: center; margin-bottom: 2rem;">
+        <h1 style="font-size: 2.8rem; color: #facc15; margin: 0 0 10px 0;">Video Devotional Archive</h1>
+        <p style="color: #cbd5e1; font-size: 1.1rem;">Missed a week? Catch up on all our past scripture readings and video studies.</p>
+    </div>
+
+    <div style="margin-bottom: 2rem; text-align: center;">
+        <input type="text" id="searchInput" onkeyup="searchLessons()" placeholder="Search by topic, book, or date (e.g. 'Exodus')..." style="width: 100%; max-width: 500px; padding: 15px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.2); background: rgba(0, 0, 0, 0.3); color: white; font-size: 1.1rem; box-sizing: border-box;">
+    </div>
+
+    <div class="card" id="archive-container" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 2rem; backdrop-filter: blur(10px);">
+        <p style="text-align: center; color: #94a3b8; font-style: italic;">Loading Archive...</p>
+    </div>
+
+</BaseLayout>
+
+<style is:global>
+    .search-folder { background: rgba(0, 0, 0, 0.15); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 8px; padding: 10px; margin-bottom: 15px; transition: all 0.3s ease; }
+    .search-folder[open] { background: rgba(0, 0, 0, 0.3); padding-bottom: 15px; }
+    .search-folder summary { cursor: pointer; font-weight: bold; color: #facc15; font-size: 1.2rem; outline: none; display: flex; align-items: center; padding: 5px; }
+    
+    .month-folder { margin-left: 20px; margin-top: 10px; background: rgba(255, 255, 255, 0.02); border-left: 2px solid #facc15; }
+    .month-folder summary { color: #fef08a; font-size: 1.1rem; }
+
+    .lesson-item { background: rgba(255, 255, 255, 0.05); margin-bottom: 8px; padding: 12px 15px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; }
+    .lesson-item:hover { background: rgba(250, 204, 21, 0.1); }
+    .lesson-item a { color: #f8fafc; text-decoration: none; font-weight: 500; font-size: 1.05rem; display: block; width: 100%; }
+    .lesson-item a:hover { color: #facc15; }
+    .lesson-date { color: #94a3b8; font-size: 0.85rem; margin-left: 15px; white-space: nowrap; }
+    
+    @media (max-width: 600px) { .lesson-item { flex-direction: column; align-items: flex-start; gap: 5px; } .lesson-date { margin-left: 0; } }
+</style>
+
+<script is:inline define:vars={{ LESSONS_CSV: lessonsCsv }}>
+    async function loadArchive() {
+        try {
+            const res = await fetch(`${LESSONS_CSV}${LESSONS_CSV.includes('?') ? '&' : '?'}t=${Date.now()}`);
+            const text = await res.text();
+            const rows = text.split('\n').slice(1).reverse();
+            
+            const grouped = {};
+            rows.forEach(row => {
+                const cols = row.split(',').map(s => s.trim());
+                if(cols.length < 4 || !cols[1]) return;
+                
+                const dateRaw = cols[0];
+                const title = cols[1];
+                const script = cols[2];
+                const ytId = cols[3];
+                
+                let d = new Date(dateRaw);
+                if (isNaN(d)) d = new Date();
+                const year = d.getFullYear();
+                const month = d.toLocaleString('default', { month: 'long' });
+                
+                if (!grouped[year]) grouped[year] = {};
+                if (!grouped[year][month]) grouped[year][month] = [];
+                grouped[year][month].push({ dateRaw, title, script, ytId });
+            });
+
+            const container = document.getElementById('archive-container');
+            container.innerHTML = '';
+
+            Object.keys(grouped).sort((a,b) => b-a).forEach(year => {
+                const yearDetails = document.createElement('details');
+                yearDetails.className = 'search-folder';
+                yearDetails.open = true;
+                yearDetails.innerHTML = `<summary>📁 ${year} Series</summary>`;
+                
+                Object.keys(grouped[year]).forEach(month => {
+                    const monthDetails = document.createElement('details');
+                    monthDetails.className = 'search-folder month-folder';
+                    monthDetails.open = true;
+                    monthDetails.innerHTML = `<summary>📂 ${month}</summary>`;
+                    
+                    const list = document.createElement('ul');
+                    list.style = "list-style: none; padding: 0; margin: 10px 0 0 20px;";
+                    
+                    grouped[year][month].forEach(item => {
+                        const li = document.createElement('li');
+                        li.className = 'lesson-item room-item';
+                        // Add searchable text to a hidden data attribute
+                        li.setAttribute('data-search', `${item.title} ${item.script} ${item.dateRaw}`.toLowerCase());
+                        
+                        li.innerHTML = `
+                            <a href="https://youtube.com/watch?v=${item.ytId}" target="_blank">${item.title} (${item.script})</a>
+                            <span class="lesson-date">${item.dateRaw}</span>
+                        `;
+                        list.appendChild(li);
+                    });
+                    
+                    monthDetails.appendChild(list);
+                    yearDetails.appendChild(monthDetails);
+                });
+                container.appendChild(yearDetails);
+            });
+
+        } catch (e) {
+            document.getElementById('archive-container').innerHTML = '<p style="color: #ef4444;">Failed to load archive.</p>';
+        }
+    }
+
+    window.searchLessons = () => {
+        const input = document.getElementById('searchInput').value.toLowerCase();
+        const items = document.getElementsByClassName('room-item');
+        
+        if (input !== "") { document.querySelectorAll('.search-folder').forEach(d => d.setAttribute('open', 'true')); }
+        
+        for (let i = 0; i < items.length; i++) {
+            const searchableText = items[i].getAttribute('data-search');
+            items[i].style.display = searchableText.includes(input) ? "flex" : "none";
+        }
+    };
+
+    loadArchive();
+    document.addEventListener('astro:page-load', loadArchive);
+</script>

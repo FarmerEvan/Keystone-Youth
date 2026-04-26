@@ -1,0 +1,94 @@
+---
+// src/components/manage/AdminDashboard.astro
+---
+
+<div id="admin-dashboard-view" class="admin-grid">
+            
+    <div class="dashboard-card" style="border-top: 4px solid #06b6d4;">
+        <div class="card-header">
+            <h3 style="color: #06b6d4;">👦 Children's Church</h3>
+            <button class="icon-btn" onclick="openModal('cc-modal')" title="Add Spot">➕</button>
+        </div>
+        <div id="dash-kids" class="preview-list"></div>
+        <button id="btn-room-kids" class="expand-btn" onclick="openRoom('kids')" style="display:none;">Show All ▾</button>
+    </div>
+
+    <div class="dashboard-card" style="border-top: 4px solid #fb923c;">
+        <div class="card-header">
+            <h3 style="color: #fb923c;">📅 Upcoming Events</h3>
+            <button class="icon-btn" onclick="openModal('ev-modal')" title="Add Event">➕</button>
+        </div>
+        <div id="dash-upcoming" class="preview-list"></div>
+        <button id="btn-room-upcoming" class="expand-btn" onclick="openRoom('upcoming')" style="display:none;">Show All ▾</button>
+    </div>
+
+    <div class="dashboard-card" style="border-top: 4px solid #94a3b8;">
+        <div class="card-header">
+            <h3 style="color: #94a3b8;">🕰️ Past Events</h3>
+        </div>
+        <div id="dash-past" class="preview-list"></div>
+        <button id="btn-room-past" class="expand-btn" onclick="openRoom('past')" style="display:none;">Show All ▾</button>
+    </div>
+
+    <div class="dashboard-card" style="border-top: 4px solid #38bdf8;">
+        <div class="card-header">
+            <h3 style="color: #38bdf8;">📺 Video Lessons</h3>
+            <button class="icon-btn" onclick="openModal('les-modal')" title="Add Lesson">➕</button>
+        </div>
+        <div id="dash-lessons" class="preview-list"></div>
+        <button id="btn-room-lessons" class="expand-btn" onclick="openRoom('lessons')" style="display:none;">Show All ▾</button>
+    </div>
+
+    <div class="dashboard-card" style="border-color: #a855f7;">
+    <div class="card-header">
+        <h3 style="color: #a855f7;">🙌 Opportunities</h3>
+        <button class="icon-btn" onclick="openModal('opp-modal')" title="Add Role">➕</button>
+    </div>
+    <div class="preview-list" id="dash-opportunities">
+        <p style="color: #94a3b8; font-size: 0.9rem; text-align: center;">Loading...</p>
+    </div>
+    <button class="expand-btn" id="btn-room-opportunities" onclick="openRoom('opportunities')" style="display: none;"></button>
+</div>
+
+<div class="dashboard-card" style="border-color: #3b82f6;">
+    <div class="card-header">
+        <h3 style="color: #3b82f6;">📥 Applications</h3>
+        </div>
+    <div class="preview-list" id="dash-applications">
+        <p style="color: #94a3b8; font-size: 0.9rem; text-align: center;">Loading...</p>
+    </div>
+    <button class="expand-btn" id="btn-room-applications" onclick="openRoom('applications')" style="display: none;"></button>
+</div>
+
+<div class="dashboard-card" style="border-color: #a855f7;">
+    <div class="card-header">
+        <h3 style="color: #a855f7;">💬 Recent Feedback</h3>
+    </div>
+    <div class="preview-list" id="dash-feedback">
+        <p style="color: #94a3b8; font-size: 0.9rem; text-align: center;">Loading...</p>
+    </div>
+    <button class="expand-btn" id="btn-room-feedback" onclick="openRoom('feedback')" style="display: none;"></button>
+</div>
+
+<div class="dashboard-card" style="border-color: #3b82f6;">
+    <div class="card-header">
+        <h3 style="color: #3b82f6;">🙏 Prayer Wall</h3>
+    </div>
+    <div class="preview-list" id="dash-prayers">
+        <p style="color: #94a3b8; font-size: 0.9rem; text-align: center;">Loading...</p>
+    </div>
+    <button class="expand-btn" id="btn-room-prayers" onclick="openRoom('prayers')" style="display: none;"></button>
+</div>
+
+<div class="dashboard-card" style="border-color: #f59e0b;">
+    <div class="card-header">
+        <h3 style="color: #f59e0b;">🍕 Food Schedule</h3>
+        <button class="icon-btn" onclick="openModal('food-modal')" title="Add Food Spot">➕</button>
+    </div>
+    <div class="preview-list" id="dash-food">
+        <p style="color: #94a3b8; font-size: 0.9rem; text-align: center;">Loading...</p>
+    </div>
+    <button class="expand-btn" id="btn-room-food" onclick="openRoom('food')" style="display: none;"></button>
+</div>
+
+</div>

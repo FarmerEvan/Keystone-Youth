@@ -1,0 +1,190 @@
+---
+// src/components/VolunteerOpportunities.astro
+
+export interface Props {
+    // The specific audience to filter for ('Parent', 'Student', 'Leader', 'Helper')
+    audience: string;
+}
+
+const { audience } = Astro.props;
+const oppsCsv = import.meta.env.PUBLIC_OPPORTUNITIES_CSV_URL;
+const scriptAppUrl = import.meta.env.PUBLIC_SCRIPT_URL; 
+---
+
+<div id={`opportunities-container-${audience}`} style="display: flex; flex-direction: column; gap: 15px;">
+    <p style="text-align: center; color: #94a3b8; font-style: italic; width: 100%;">Loading opportunities...</p>
+</div>
+
+<div id={`apply-modal-${audience}`} class="modal-overlay" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(5px); z-index: 10000; align-items: center; justify-content: center; padding: 1rem;">
+    <div class="modal-content" style="background: #1e293b; border-top: 4px solid #a855f7; border-radius: 16px; width: 100%; max-width: 500px; padding: 2rem; box-shadow: 0 20px 50px rgba(0,0,0,0.8); max-height: 90vh; overflow-y: auto;">
+        
+        <h2 style="color: white; margin: 0 0 5px 0;">Apply to Serve</h2>
+        <p style="color: #cbd5e1; font-size: 0.9rem; margin-bottom: 15px;">Role: <strong id={`apply-role-name-${audience}`} style="color: #a855f7;"></strong></p>
+
+        <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; border-left: 3px solid #a855f7; margin-bottom: 20px;">
+            <p id={`apply-role-desc-${audience}`} style="color: #cbd5e1; font-size: 0.9rem; line-height: 1.5; margin: 0;"></p>
+        </div>
+
+        <input type="hidden" id={`apply-role-hidden-${audience}`}>
+        <input type="text" id={`apply-name-${audience}`} placeholder="Your Name" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.3); color: white; margin-bottom: 10px; box-sizing: border-box;" required>
+        <input type="text" id={`apply-contact-${audience}`} placeholder="Email or Phone Number" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.3); color: white; margin-bottom: 10px; box-sizing: border-box;" required>
+        
+        <div id={`apply-dynamic-fields-${audience}`}></div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 15px;">
+            <button onclick={`document.getElementById('apply-modal-${audience}').style.display='none'`} style="background: transparent; border: 1px solid #475569; color: white; padding: 10px 20px; border-radius: 8px; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='transparent'">Cancel</button>
+            <button id={`btn-submit-application-${audience}`} style="background: #a855f7; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">Submit Application</button>
+        </div>
+    </div>
+</div>
+
+<script is:inline define:vars={{ AUDIENCE: audience, OPPS_URL: oppsCsv, SCRIPT_URL: scriptAppUrl }}>
+    
+    function parseCsvRow(row, expectedLength) {
+        const c = []; let inQuotes = false; let current = '';
+        for (let i = 0; i < row.length; i++) {
+            const char = row[i];
+            if (char === '"') inQuotes = !inQuotes;
+            else if (char === ',' && !inQuotes) { c.push(current); current = ''; }
+            else current += char;
+        }
+        c.push(current);
+        const mapped = c.map(s => s.replace(/^"|"$/g, '').trim());
+        while(mapped.length < expectedLength) mapped.push('');
+        return mapped;
+    }
+
+    function addViewAllButton(container, hiddenElements, totalCount, color) {
+        const btn = document.createElement('button');
+        btn.innerText = `View All (${totalCount}) ▾`;
+        btn.style = `width: 100%; background: transparent; border: 1px dashed ${color}; color: ${color}; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: all 0.2s; margin-top: 5px;`;
+        let isExpanded = false;
+        btn.onmouseover = () => { btn.style.background = 'rgba(255,255,255,0.05)'; };
+        btn.onmouseout = () => { btn.style.background = 'transparent'; };
+        btn.onclick = () => {
+            isExpanded = !isExpanded;
+            hiddenElements.forEach(el => el.style.display = isExpanded ? el.dataset.originalDisplay : 'none');
+            btn.innerText = isExpanded ? `Show Less ▴` : `View All (${totalCount}) ▾`;
+        };
+        container.appendChild(btn);
+    }
+
+    async function loadOpportunities() {
+        const container = document.getElementById(`opportunities-container-${AUDIENCE}`);
+        try {
+            const res = await fetch(`${OPPS_URL}${OPPS_URL.includes('?') ? '&' : '?'}t=${Date.now()}`);
+            const text = await res.text();
+            const rows = text.split('\n').slice(1);
+            
+            let count = 0;
+            let hiddenElements = [];
+            container.innerHTML = '';
+            
+            let audienceIndex = 3; 
+            if(AUDIENCE === 'Student') audienceIndex = 4;
+            if(AUDIENCE === 'Leader') audienceIndex = 5;
+            if(AUDIENCE === 'Helper') audienceIndex = 6;
+
+            rows.forEach(row => {
+                if(!row.trim()) return;
+                const c = parseCsvRow(row, 9);
+                if(!c[1]) return; 
+
+                const isActive = (c[7] || '').toUpperCase() === 'TRUE';
+                const matchesAudience = (c[audienceIndex] || '').toUpperCase() === 'TRUE'; 
+
+                if (isActive && matchesAudience) {
+                    const box = document.createElement('div');
+                    // Changed from static div to clickable card
+                    box.style = `background: rgba(0,0,0,0.2); border-left: 4px solid #a855f7; padding: 20px; border-radius: 8px; cursor: pointer; transition: transform 0.2s;`;
+                    box.onmouseover = () => box.style.transform = "translateX(5px)";
+                    box.onmouseout = () => box.style.transform = "translateX(0)";
+                    
+                    // Pass Title, Description, and Questions to the Modal
+                    box.onclick = () => openApplyModal(c[1], c[2], c[8] || '');
+
+                    box.innerHTML = `
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <h3 style="margin: 0; color: #fff;">${c[1]}</h3>
+                            <span style="background: #a855f7; color: white; padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: bold;">View Role</span>
+                        </div>
+                    `;
+                    
+                    if (count >= 3) {
+                        box.dataset.originalDisplay = box.style.display || 'block';
+                        box.style.display = 'none';
+                        hiddenElements.push(box);
+                    }
+                    
+                    container.appendChild(box);
+                    count++;
+                }
+            });
+
+            if(count === 0) container.innerHTML = '<p style="color: #94a3b8; text-align: center; width: 100%;">No roles available right now, but check back soon!</p>';
+            else if (hiddenElements.length > 0) addViewAllButton(container, hiddenElements, count, '#a855f7');
+
+        } catch(e) {
+            container.innerHTML = '<p style="color: #ef4444; text-align: center; width: 100%;">Failed to load opportunities.</p>';
+        }
+    }
+
+    function openApplyModal(roleTitle, roleDesc, questionsStr) {
+        document.getElementById(`apply-role-name-${AUDIENCE}`).innerText = roleTitle;
+        document.getElementById(`apply-role-hidden-${AUDIENCE}`).value = roleTitle;
+        document.getElementById(`apply-name-${AUDIENCE}`).value = '';
+        document.getElementById(`apply-contact-${AUDIENCE}`).value = '';
+        
+        // Inject the Description into the Modal
+        document.getElementById(`apply-role-desc-${AUDIENCE}`).innerHTML = (roleDesc || 'No description provided.').replace(/\\n/g, '<br>');
+
+        const targetDiv = document.getElementById(`apply-dynamic-fields-${AUDIENCE}`);
+        targetDiv.innerHTML = '';
+        
+        if (questionsStr && questionsStr.trim() !== '') {
+            const questions = questionsStr.split('\\n');
+            questions.forEach(q => {
+                if(!q.trim()) return;
+                targetDiv.innerHTML += `
+                    <label style="color: #a855f7; font-size: 0.85rem; font-weight: bold; margin-bottom: 5px; display: block;">${q}</label>
+                    <textarea class="dynamic-app-answer-${AUDIENCE}" data-question="${q}" rows="2" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.3); color: white; font-family: inherit; margin-bottom: 15px; resize: vertical; box-sizing: border-box;" required></textarea>
+                `;
+            });
+        } else {
+            targetDiv.innerHTML = `
+                <textarea class="dynamic-app-answer-${AUDIENCE}" data-question="Message/Experience" rows="3" placeholder="Why are you interested in this role?" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.3); color: white; font-family: inherit; margin-bottom: 15px; resize: vertical; box-sizing: border-box;" required></textarea>
+            `;
+        }
+
+        document.getElementById(`btn-submit-application-${AUDIENCE}`).innerText = 'Submit Application';
+        document.getElementById(`apply-modal-${AUDIENCE}`).style.display = 'flex';
+    }
+
+    document.getElementById(`btn-submit-application-${AUDIENCE}`).onclick = async () => {
+        const name = document.getElementById(`apply-name-${AUDIENCE}`).value.trim();
+        const contact = document.getElementById(`apply-contact-${AUDIENCE}`).value.trim();
+        const role = document.getElementById(`apply-role-hidden-${AUDIENCE}`).value;
+
+        if(!name || !contact) return alert("Please provide your name and contact info!");
+
+        let compiledMessage = "";
+        document.querySelectorAll(`.dynamic-app-answer-${AUDIENCE}`).forEach(input => {
+            compiledMessage += `Q: ${input.dataset.question}\\nA: ${input.value}\\n\\n`;
+        });
+
+        const btn = document.getElementById(`btn-submit-application-${AUDIENCE}`);
+        btn.innerText = "Sending...";
+
+        try {
+            const params = new URLSearchParams({ action: "submitApplication", name: name, contact: contact, role: role, message: compiledMessage });
+            await fetch(`${SCRIPT_URL}?${params.toString()}`, {mode:'no-cors'});
+            btn.innerText = "✅ Sent!";
+            setTimeout(() => { document.getElementById(`apply-modal-${AUDIENCE}`).style.display = 'none'; }, 2000);
+        } catch (e) {
+            btn.innerText = "❌ Error";
+        }
+    };
+
+    loadOpportunities();
+    document.addEventListener('astro:page-load', loadOpportunities);
+</script>

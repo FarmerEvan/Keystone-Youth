@@ -1,0 +1,237 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const foodCsv = import.meta.env.PUBLIC_FOOD_CSV_URL;
+const scriptAppUrl = import.meta.env.PUBLIC_SCRIPT_URL;
+---
+
+<BaseLayout title="Youth Food Schedule" backLink="/leader" backText="Leader Hub" accentColor="#f59e0b">
+
+    <div class="header" style="text-align: center; margin-bottom: 3rem;">
+        <h1 style="font-size: 2.8rem; color: #f59e0b; margin: 0 0 10px 0;">Youth Food Schedule</h1>
+        <p style="color: #cbd5e1; font-size: 1.1rem; line-height: 1.5; max-width: 600px; margin: 0 auto;">Sign up to bring food, view popular items, and log what was served so we know what the students love!</p>
+    </div>
+
+    <div class="card" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 2rem; backdrop-filter: blur(10px);">
+        <div id="signup-container">
+            <p style="text-align: center; color: #94a3b8; font-style: italic;">Loading schedule...</p>
+        </div>
+    </div>
+
+    <div id="name-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content" style="border-top: 4px solid #f59e0b;">
+            <h3 id="modal-title" style="color: #f59e0b; margin-top: 0;">Reserve Date</h3>
+            <p style="color: #cbd5e1;">Please enter your first and last name:</p>
+            <input type="hidden" id="modal-id-hidden">
+            <input type="text" id="modal-name-input" placeholder="e.g. Jane Doe" autocomplete="off" style="width: 100%; padding: 15px; margin-bottom: 20px; border-radius: 8px; border: 1px solid #475569; background: #0f172a; color: white; font-size: 1.1rem; box-sizing: border-box;" />
+            <div class="modal-actions" style="display: flex; justify-content: flex-end; gap: 15px;">
+                <button id="modal-cancel-btn" class="btn-cancel">Cancel</button>
+                <button id="modal-confirm-btn" style="background: #f59e0b; color: #0f172a; padding: 10px 20px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="portal-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content" style="max-width: 500px; max-height: 90vh; overflow-y: auto; border-top: 4px solid #10b981;">
+            <h3 id="portal-title" style="color: #10b981; margin-top: 0; margin-bottom: 5px;">Food Portal</h3>
+            <p id="portal-subtitle" style="color: #94a3b8; margin-top: 0; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px;">Date</p>
+
+            <input type="hidden" id="portal-id-hidden">
+
+            <div style="background: rgba(0,0,0,0.2); border-radius: 12px; padding: 1.5rem; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 20px;">
+                <h4 style="margin: 0 0 10px 0; color: #f8fafc; font-size: 1.1rem;">🍕 What was served?</h4>
+                <p style="margin: 0 0 10px 0; color: #94a3b8; font-size: 0.85rem;">Help us track what meals we've already done.</p>
+                <input type="text" id="portal-served-input" placeholder="e.g. 10 Pizzas and Brownies" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.3); color: white; margin-bottom: 20px; box-sizing: border-box;">
+
+                <h4 style="margin: 0 0 10px 0; color: #f8fafc; font-size: 1.1rem;">💬 Feedback / Popularity</h4>
+                <p style="margin: 0 0 10px 0; color: #94a3b8; font-size: 0.85rem;">Did they love it? Were there leftovers? Let us know!</p>
+                <textarea id="portal-feedback-text" rows="3" placeholder="e.g. They devoured the pizza, but we needed more drinks." style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.3); color: white; font-family: inherit; margin-bottom: 10px; resize: vertical; box-sizing: border-box;"></textarea>
+                
+                <button id="btn-submit-portal-feedback" style="background: #10b981; color: white; border: none; padding: 10px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; transition: opacity 0.2s;">Save Info</button>
+            </div>
+
+            <div style="text-align: right;">
+                <button onclick="document.getElementById('portal-modal').style.display='none'" class="btn-cancel">Close</button>
+            </div>
+        </div>
+    </div>
+
+</BaseLayout>
+
+<style is:global>
+    .date-row { display: flex; justify-content: space-between; align-items: center; background: rgba(0, 0, 0, 0.2); padding: 15px 20px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid #f59e0b; cursor: pointer; transition: transform 0.2s, background 0.2s; }
+    .date-row:hover { transform: translateX(5px); background: rgba(0, 0, 0, 0.3); }
+    .date-row.filled { border-left-color: #475569; background: rgba(255,255,255,0.02); }
+    .date-info h3 { margin: 0 0 5px 0; color: #f8fafc; font-size: 1.2rem; }
+    .date-info p { margin: 0; color: #94a3b8; font-size: 0.9rem; }
+    .status-badge { background: #f59e0b; color: #0f172a; padding: 6px 12px; border-radius: 6px; font-weight: bold; font-size: 0.9rem; }
+    .status-badge.filled { background: transparent; border: 1px solid #475569; color: #94a3b8; }
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(8px); z-index: 9999; display: flex; align-items: center; justify-content: center; animation: fadeIn 0.2s ease-out; }
+    .modal-content { background: #1e293b; border: 1px solid rgba(255,255,255,0.1); padding: 2.5rem; border-radius: 16px; width: 90%; max-width: 450px; box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
+    .btn-cancel { background: transparent; border: 1px solid #475569; color: #cbd5e1; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: background 0.3s; font-family: inherit; font-size: 1rem; }
+    .btn-cancel:hover { background: rgba(255,255,255,0.1); color: #fff; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @media (max-width: 600px) { .date-row { flex-direction: column; align-items: flex-start; gap: 10px; } .status-badge { width: 100%; text-align: center; box-sizing: border-box; } }
+</style>
+
+<script is:inline define:vars={{ SHEET_CSV_URL: foodCsv, SCRIPT_URL: scriptAppUrl }}>
+    
+    function parseCsvRow(row, expectedLength) {
+        const c = []; let inQuotes = false; let current = '';
+        for (let i = 0; i < row.length; i++) {
+            const char = row[i];
+            if (char === '"') inQuotes = !inQuotes;
+            else if (char === ',' && !inQuotes) { c.push(current); current = ''; }
+            else current += char;
+        }
+        c.push(current);
+        const mapped = c.map(s => s.replace(/^"|"$/g, '').trim());
+        while(mapped.length < expectedLength) mapped.push('');
+        return mapped;
+    }
+
+    function formatDate(raw) {
+        if (!raw) return '';
+        if (raw.match(/^\d{4}-\d{2}-\d{2}$/)) {
+            const p = raw.split('-');
+            const d = new Date(p[0], p[1]-1, p[2]);
+            return d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+        }
+        try {
+            const d = new Date(raw);
+            if (!isNaN(d)) return d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+        } catch(e) {}
+        return raw;
+    }
+
+    async function loadFoodSchedule() {
+        const container = document.getElementById('signup-container');
+        try {
+            const response = await fetch(`${SHEET_CSV_URL}${SHEET_CSV_URL.includes('?') ? '&' : '?'}t=${Date.now()}`);
+            const text = await response.text();
+            const rows = text.split('\n').slice(1);
+            container.innerHTML = '';
+            
+            let validSpots = [];
+            const now = Date.now();
+
+            rows.forEach(row => {
+                if(!row.trim()) return;
+                
+                const c = parseCsvRow(row, 7);
+                if (!c[1]) return; 
+
+                let d = new Date();
+                if (c[1].match(/^\d{4}-\d{2}-\d{2}$/)) { const p = c[1].split('-'); d = new Date(p[0], p[1]-1, p[2]); } else { d = new Date(c[1]); }
+                d.setHours(23,59,59,999);
+                if (now > d.getTime()) return;
+
+                validSpots.push({ 
+                    timestamp: d.getTime(),
+                    id: c[0], 
+                    displayDate: formatDate(c[1]), 
+                    needed: c[2], 
+                    name: c[3], 
+                    isFilled: c[4].toUpperCase() === 'TRUE', 
+                    served: c[5], 
+                    feedback: c[6] 
+                });
+            });
+
+            validSpots.sort((a, b) => a.timestamp - b.timestamp);
+
+            if (validSpots.length === 0) {
+                container.innerHTML = '<p style="color: #94a3b8; text-align: center;">No upcoming food slots available to reserve.</p>';
+                return;
+            }
+
+            validSpots.forEach(spot => {
+                const rowDiv = document.createElement('div');
+                rowDiv.className = `date-row ${spot.isFilled ? 'filled' : ''}`;
+                
+                rowDiv.onclick = () => {
+                    if (spot.isFilled) openFoodPortal(spot);
+                    else handleReservation(spot.id, spot.displayDate, rowDiv);
+                };
+
+                rowDiv.innerHTML = `
+                    <div class="date-info">
+                        <h3>${spot.displayDate}</h3>
+                        <p>${spot.isFilled ? `Volunteered by: <strong>${spot.name}</strong>` : `Needed: <strong>${spot.needed || 'Anything!'}</strong>`}</p>
+                    </div>
+                    <span class="status-badge ${spot.isFilled ? 'filled' : ''}">${spot.isFilled ? 'Log Food' : 'Open - Reserve'}</span>
+                `;
+                container.appendChild(rowDiv);
+            });
+
+        } catch (error) {
+            container.innerHTML = '<p style="color: #ef4444; text-align: center;">Failed to load schedule.</p>';
+        }
+    }
+
+    function openFoodPortal(spot) {
+        document.getElementById('portal-id-hidden').value = spot.id;
+        document.getElementById('portal-subtitle').innerHTML = `<strong>${spot.displayDate}</strong> • Thank you, ${spot.name}!`;
+        document.getElementById('portal-served-input').value = spot.served || '';
+        document.getElementById('portal-feedback-text').value = spot.feedback || '';
+        document.getElementById('btn-submit-portal-feedback').innerText = 'Save Info';
+        document.getElementById('portal-modal').style.display = 'flex';
+    }
+
+    async function handleReservation(id, displayDate, rowElement) {
+        const name = await askForName(displayDate);
+        if (!name || name.trim() === "") return;
+
+        const badge = rowElement.querySelector('.status-badge');
+        badge.innerText = "Saving...";
+
+        try {
+            const params = new URLSearchParams({ action: "reserveFoodSpot", id: id, name: name.trim() });
+            await fetch(SCRIPT_URL + "?" + params.toString(), { method: 'GET', mode: 'no-cors' });
+            loadFoodSchedule(); 
+        } catch (error) {
+            alert("Oops! Something went wrong.");
+            badge.innerText = "Open - Reserve";
+        }
+    }
+
+    function askForName(displayDate) {
+        return new Promise((resolve) => {
+            const modal = document.getElementById('name-modal');
+            const input = document.getElementById('modal-name-input');
+            const cancelBtn = document.getElementById('modal-cancel-btn');
+            const confirmBtn = document.getElementById('modal-confirm-btn');
+
+            document.getElementById('modal-title').innerText = `Reserving ${displayDate}`;
+            input.value = '';
+            modal.style.display = 'flex';
+            input.focus();
+
+            const cleanup = () => { modal.style.display = 'none'; cancelBtn.onclick = null; confirmBtn.onclick = null; };
+            cancelBtn.onclick = () => { cleanup(); resolve(null); };
+            confirmBtn.onclick = () => { cleanup(); resolve(input.value); };
+            input.onkeypress = (e) => { if (e.key === 'Enter') { cleanup(); resolve(input.value); } };
+        });
+    }
+
+    document.getElementById('btn-submit-portal-feedback').onclick = async () => {
+        const id = document.getElementById('portal-id-hidden').value;
+        const served = document.getElementById('portal-served-input').value.trim();
+        const feedback = document.getElementById('portal-feedback-text').value.trim();
+        
+        const btn = document.getElementById('btn-submit-portal-feedback');
+        btn.innerText = "Saving...";
+        
+        try {
+            const params = new URLSearchParams({ action: "updateFoodPortal", id: id, served: served, feedback: feedback });
+            await fetch(`${SCRIPT_URL}?${params.toString()}`, {mode:'no-cors'});
+            btn.innerText = "✅ Saved!";
+            setTimeout(() => { document.getElementById('portal-modal').style.display = 'none'; loadFoodSchedule(); }, 1500);
+        } catch (e) {
+            btn.innerText = "❌ Error saving";
+        }
+    };
+
+    loadFoodSchedule();
+    document.addEventListener('astro:page-load', loadFoodSchedule);
+</script>

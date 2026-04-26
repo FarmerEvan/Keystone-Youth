@@ -1,0 +1,234 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import VolunteerOpportunities from '../components/VolunteerOpportunities.astro';
+import PrayerWall from '../components/PrayerWall.astro';
+
+const eventsCsv = import.meta.env.PUBLIC_EVENTS_CSV_URL;
+const scriptAppUrl = import.meta.env.PUBLIC_SCRIPT_URL; 
+
+const blessWays = [
+    { icon: "💵", title: "Sponsor a Student", desc: "Camp and retreat costs can be tough. Give a financial gift designated for 'Youth Scholarships'." },
+    { icon: "🧃", title: "Stock the Fridge", desc: "Dropping off water bottles or pre-packaged snacks during the week is a huge blessing." }
+];
+---
+
+<BaseLayout title="Helper Hub" backLink="/" backText="Home" accentColor="#a855f7">
+
+    <div class="header" style="text-align: center; margin-bottom: 3rem;">
+        <h1 style="font-size: 3rem; color: #a855f7; margin: 0 0 10px 0;">Helper Hub</h1>
+        
+        <div class="memory-verse" style="background: rgba(168, 85, 247, 0.1); border-left: 4px solid #a855f7; padding: 1.5rem; border-radius: 0 12px 12px 0; max-width: 700px; margin: 0 auto; text-align: left;">
+            <h3 style="color: #a855f7; margin: 0 0 10px 0; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 1px;">Serving the Body</h3>
+            <p style="font-size: 1.2rem; font-style: italic; margin: 0 0 10px 0; line-height: 1.6;">"Each of you should use whatever gift you have received to serve others, as faithful stewards of God’s grace in its various forms."</p>
+            <p class="reference" style="font-size: 1rem; font-weight: bold; color: #cbd5e1; text-align: right; margin: 0;">- 1 Peter 4:10</p>
+        </div>
+    </div>
+
+    <div class="grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+        
+        <div class="card" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 2rem; display: flex; flex-direction: column;">
+            <h2 style="display: flex; align-items: center; gap: 10px; margin-top: 0; color: #a855f7; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 10px;">🤝 Serving Opportunities</h2>
+            <p style="color: #cbd5e1; margin-bottom: 20px;">It takes a village! Here are our current active needs for volunteers.</p>
+            <a href="/food-schedule" style="display: flex; align-items: center; justify-content: center; gap: 10px; background: rgba(245, 158, 11, 0.1); border: 1px dashed #f59e0b; color: #f59e0b; padding: 12px; border-radius: 8px; font-weight: bold; text-decoration: none; margin-bottom: 20px; transition: background 0.2s;" onmouseover="this.style.background='rgba(245,158,11,0.2)'" onmouseout="this.style.background='rgba(245, 158, 11, 0.1)'">
+            <span style="font-size: 1.2rem;">🍕</span> View Youth Food Schedule
+            </a>
+            
+            <VolunteerOpportunities audience="Helper" />
+        </div>
+
+        <div class="card" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 2rem; display: flex; flex-direction: column;">
+            <h2 style="display: flex; align-items: center; gap: 10px; margin-top: 0; color: #f8fafc; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 10px;">🎁 Bless the Ministry</h2>
+            <p style="color: #cbd5e1;">Not everyone can volunteer on Sunday nights, but there are many other ways to support our students!</p>
+            
+            <div style="background: rgba(0, 0, 0, 0.2); border-radius: 8px; padding: 15px; margin-bottom: 15px; border-left: 4px solid #a855f7;">
+                <h3 style="margin: 0 0 5px 0; color: #fff;">🙏 The Prayer Team</h3>
+                <p style="margin: 0; font-size: 0.9rem; color: #cbd5e1;">Commit to praying specifically for our youth pastor, leaders, and students.</p>
+            </div>
+            
+            <ul style="list-style: none; padding: 0; margin: 0;">
+                {blessWays.map(way => (
+                    <li style="background: rgba(255, 255, 255, 0.05); margin-bottom: 10px; padding: 12px; border-radius: 8px; color: #cbd5e1; font-size: 0.95rem; line-height: 1.5;">
+                        <strong style="color: #fff;">{way.icon} {way.title}:</strong> {way.desc}
+                    </li>
+                ))}
+            </ul>
+        </div>
+
+        <div class="card" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 2rem; display: flex; flex-direction: column;">
+            <h2 style="display: flex; align-items: center; gap: 10px; margin-top: 0; color: #3b82f6; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 10px;">🙏 Prayer Wall</h2>
+            <p style="color: #cbd5e1; margin-bottom: 20px;">Bear one another's burdens. See how you can pray for our ministry.</p>
+            
+            <PrayerWall audience="Helper" />
+        </div>
+
+        <div class="card" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 2rem; display: flex; flex-direction: column;">
+            <h2 style="display: flex; align-items: center; gap: 10px; margin-top: 0; color: #f8fafc; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 10px;">📅 Event Information</h2>
+            <p style="color: #cbd5e1; margin-bottom: 15px;">See when we meet so you know how to pray for us, or when to drop off food and supplies!</p>
+            
+            <div id="live-events-container" style="display: flex; flex-direction: column; gap: 10px;">
+                <p style="text-align: center; color: #94a3b8; font-style: italic;">Loading events...</p>
+            </div>
+        </div>
+
+    </div>
+
+</BaseLayout>
+
+<script is:inline define:vars={{ CSV_URL: eventsCsv, SCRIPT_URL: scriptAppUrl }}>
+    
+    function parseCsvRow(row, expectedLength) {
+        const c = []; let inQuotes = false; let current = '';
+        for (let i = 0; i < row.length; i++) {
+            const char = row[i];
+            if (char === '"') inQuotes = !inQuotes;
+            else if (char === ',' && !inQuotes) { c.push(current); current = ''; }
+            else current += char;
+        }
+        c.push(current);
+        const mapped = c.map(s => s.replace(/^"|"$/g, '').trim());
+        while(mapped.length < expectedLength) mapped.push('');
+        return mapped;
+    }
+
+    function formatDate(raw) {
+        if (!raw) return '';
+        if (raw.match(/^\d{4}-\d{2}-\d{2}$/)) {
+            const p = raw.split('-');
+            const d = new Date(p[0], p[1]-1, p[2]);
+            return d.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+        }
+        return raw;
+    }
+
+    function formatTime(raw) {
+        if (!raw) return '';
+        const str = raw.trim();
+        const match = str.match(/(\d{1,2}):(\d{2})(?::\d{2})?\s*(AM|PM|am|pm)?/i);
+        if (match) {
+            let h = parseInt(match[1], 10);
+            let m = match[2];
+            let ampm = match[3] ? match[3].toLowerCase() : null;
+            if (!ampm) { ampm = h >= 12 ? 'pm' : 'am'; h = h % 12 || 12; }
+            return `${h}:${m}${ampm}`;
+        }
+        return str;
+    }
+
+    function getEventTimestamp(dateStr, timeStr, isEnd = false) {
+        if (!dateStr) return 0;
+        let d = new Date();
+        if (dateStr.match(/^\d{4}-\d{2}-\d{2}$/)) {
+            const p = dateStr.split('-');
+            d = new Date(p[0], p[1]-1, p[2]);
+        } else {
+            d = new Date(dateStr);
+            if (isNaN(d)) return 0;
+        }
+        if (timeStr) {
+            const match = timeStr.trim().match(/(\d{1,2}):(\d{2})(?::\d{2})?\s*(AM|PM|am|pm)?/i);
+            if (match) {
+                let h = parseInt(match[1], 10);
+                let m = parseInt(match[2], 10);
+                let ampm = match[3] ? match[3].toLowerCase() : null;
+                if (ampm === 'pm' && h < 12) h += 12;
+                if (ampm === 'am' && h === 12) h = 0;
+                d.setHours(h, m, 0, 0);
+            } else { 
+                if (isEnd) d.setHours(23, 59, 59, 999); else d.setHours(0,0,0,0);
+            }
+        } else { 
+            if (isEnd) d.setHours(23, 59, 59, 999); else d.setHours(0,0,0,0);
+        }
+        return d.getTime();
+    }
+
+    function addViewAllButton(container, hiddenElements, totalCount, color) {
+        const btn = document.createElement('button');
+        btn.innerText = `View All (${totalCount}) ▾`;
+        btn.style = `width: 100%; background: transparent; border: 1px dashed ${color}; color: ${color}; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: all 0.2s; margin-top: 5px;`;
+        let isExpanded = false;
+        btn.onmouseover = () => { btn.style.background = 'rgba(255,255,255,0.05)'; };
+        btn.onmouseout = () => { btn.style.background = 'transparent'; };
+        btn.onclick = () => {
+            isExpanded = !isExpanded;
+            hiddenElements.forEach(el => el.style.display = isExpanded ? el.dataset.originalDisplay : 'none');
+            btn.innerText = isExpanded ? `Show Less ▴` : `View All (${totalCount}) ▾`;
+        };
+        container.appendChild(btn);
+    }
+
+    async function loadHelperHub() {
+        const fetchT = async (url) => { if(!url) return ""; const res = await fetch(`${url}${url.includes('?') ? '&' : '?'}t=${Date.now()}`); return await res.text(); };
+        try {
+            const evData = await fetchT(CSV_URL);
+            renderEvents(evData);
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    function renderEvents(csv) {
+        const container = document.getElementById('live-events-container');
+        if(!csv) return;
+        const rows = csv.split('\n').slice(1);
+        const now = Date.now();
+        let validEvents = [];
+        container.innerHTML = '';
+
+        rows.forEach(row => {
+            if(!row.trim()) return;
+            const c = parseCsvRow(row, 11);
+            if (!c[4]) return; 
+            
+            const endTimestamp = getEventTimestamp(c[1], c[3] || c[2], true);
+            if (now > endTimestamp) return;
+
+            validEvents.push({ 
+                dateObj: getEventTimestamp(c[1], c[2], false), 
+                date: formatDate(c[1]), 
+                timeStart: c[2],
+                timeEnd: c[3],
+                title: c[4], 
+                desc: c[5].replace(/\\n/g, '<br>'),
+                high: (c[6] || '').toUpperCase() === 'TRUE' 
+            });
+        });
+
+        validEvents.sort((a,b) => a.dateObj - b.dateObj);
+
+        if(validEvents.length === 0) {
+            container.innerHTML = '<p style="color: #94a3b8;">No upcoming events right now.</p>';
+            return;
+        }
+
+        let count = 0;
+        let hiddenElements = [];
+
+        validEvents.forEach(ev => {
+            const box = document.createElement('div');
+            const timeString = ev.timeEnd ? `${formatTime(ev.timeStart)} - ${formatTime(ev.timeEnd)}` : formatTime(ev.timeStart);
+            
+            box.style = `background: rgba(0, 0, 0, ${ev.high ? '0.2' : '0.1'}); border-radius: 8px; padding: 15px; border-left: 4px solid ${ev.high ? '#a855f7' : '#475569'};`;
+            box.innerHTML = `
+                <div style="color: ${ev.high ? '#a855f7' : '#94a3b8'}; font-weight: bold; font-size: 0.85rem; text-transform: uppercase; margin-bottom: 5px;">${ev.date}</div>
+                <div style="color: #facc15; font-size: 0.8rem; margin-bottom: 5px;">${timeString}</div>
+                <h3 style="margin: 0 0 5px 0; color: #fff;">${ev.title}</h3>
+                <p style="margin: 0; font-size: 0.9rem; color: #cbd5e1;">${ev.desc}</p>
+            `;
+            
+            if (count >= 3) {
+                box.dataset.originalDisplay = box.style.display || 'block';
+                box.style.display = 'none';
+                hiddenElements.push(box);
+            }
+
+            container.appendChild(box);
+            count++;
+        });
+
+        if (hiddenElements.length > 0) addViewAllButton(container, hiddenElements, count, '#a855f7');
+    }
+
+    loadHelperHub();
+    document.addEventListener('astro:page-load', loadHelperHub);
+</script>

@@ -1,0 +1,42 @@
+---
+// DatabaseItem.astro
+// Holds the template and styles for individual dashboard items
+---
+
+<template id="db-item-template">
+    <div class="db-item">
+        <div class="item-header" onclick="this.nextElementSibling.classList.toggle('active')">
+            <div class="header-text">
+                <strong class="t-title"></strong>
+                <span class="t-subtitle"></span>
+            </div>
+            <span class="expand-icon">▾</span>
+        </div>
+        <div class="item-content">
+            <div class="details-grid t-details"></div>
+            <div class="btn-row" style="display:flex; gap:10px;">
+                <button class="t-view push-btn-small" style="background:#10b981; display: none;">View</button>
+                <button class="t-edit push-btn-small" style="background:#475569;">Edit</button>
+                <button class="t-delete push-btn-small" style="background:#991b1b;">Delete</button>
+            </div>
+        </div>
+    </div>
+</template>
+
+<style is:global>
+    .db-item { background: rgba(15, 23, 42, 0.5); border-radius: 10px; border: 1px solid rgba(255,255,255,0.05); overflow: hidden; margin-bottom: 8px; }
+    .item-header { padding: 15px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 0.95rem; }
+    .item-header:hover { background: rgba(255,255,255,0.02); }
+    .header-text { display: flex; flex-direction: column; gap: 4px; align-items: flex-start; text-align: left; }
+    .t-title { font-size: 1.1rem; color: #f8fafc; }
+    .t-subtitle { font-size: 0.85rem; color: #94a3b8; }
+    .expand-icon { color: #64748b; font-size: 1.2rem; }
+    .item-content { padding: 15px; display: none; border-top: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.3); }
+    .item-content.active { display: block; animation: fadeIn 0.3s; }
+    .details-grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 15px; }
+    .detail-group label { display: block; font-size: 0.65rem; color: #64748b; text-transform: uppercase; margin-bottom: 4px; font-weight: bold; }
+    .detail-group p { margin: 0; color: #cbd5e1; font-size: 0.85rem; line-height: 1.4; }
+    .push-btn-small { flex: 1; padding: 10px; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: opacity 0.2s; }
+    .push-btn-small:hover { opacity: 0.8; }
+    .rich-text p { margin-top: 0; margin-bottom: 10px; }
+</style>

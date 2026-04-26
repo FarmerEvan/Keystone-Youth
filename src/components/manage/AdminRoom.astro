@@ -1,0 +1,32 @@
+---
+// src/components/manage/AdminRoom.astro
+---
+
+<div id="admin-room-view" style="display: none; animation: fadeIn 0.3s;">
+    
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem;">
+        <div>
+            <button onclick="closeRoom()" style="background: transparent; border: none; color: #94a3b8; cursor: pointer; font-size: 1rem; margin-bottom: 10px;">← Back to Dashboard</button>
+            <h2 id="room-title" style="margin: 0; font-size: 2.2rem; color: white;">Room Name</h2>
+        </div>
+    </div>
+
+    <div style="margin-bottom: 2rem;">
+        <input type="text" id="room-search" onkeyup="searchRoom()" placeholder="Search by name, date, or topic..." style="width: 100%; padding: 15px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.2); background: rgba(0, 0, 0, 0.3); color: white; font-size: 1.1rem; box-sizing: border-box;">
+    </div>
+
+    <div class="dashboard-card" style="padding: 2rem;">
+        <div id="room-content-container">
+            </div>
+    </div>
+
+</div>
+
+<style is:global>
+    /* Styling for the Year/Month Folders inside the Room */
+    .year-folder { background: rgba(0, 0, 0, 0.15); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 8px; padding: 10px; margin-bottom: 15px; }
+    .year-folder summary { cursor: pointer; font-weight: bold; font-size: 1.2rem; display: flex; align-items: center; padding: 5px; color: white; }
+    
+    .month-folder { margin-left: 20px; margin-top: 10px; border-left: 2px solid rgba(255,255,255,0.2); padding-left: 10px; }
+    .month-folder summary { font-size: 1.1rem; cursor: pointer; padding: 5px; color: #cbd5e1; }
+</style>

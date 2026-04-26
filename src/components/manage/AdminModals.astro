@@ -1,0 +1,180 @@
+---
+// AdminModals.astro
+---
+
+<div id="cc-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-content" style="border-top: 4px solid #06b6d4;">
+        <h3>➕ Add / Edit CC Spot</h3>
+        <input type="hidden" id="cc-id">
+        <div class="sub-grid">
+            <input type="date" id="cc-date" required>
+            <input type="text" id="cc-service" placeholder="Service Name (e.g. 10:00 AM)">
+        </div>
+        <div class="sub-grid">
+            <div style="display: flex; gap: 5px; align-items: center; justify-content: space-between; grid-column: 1 / -1;">
+                <input type="time" id="cc-time-start" required style="margin-bottom: 0;" title="Start Time">
+                <span style="color: #94a3b8; font-weight: bold;">to</span>
+                <input type="time" id="cc-time-end" style="margin-bottom: 0;" title="End Time">
+            </div>
+        </div>
+        <input type="text" id="cc-name" placeholder="Volunteer Name">
+        <textarea id="cc-overview" placeholder="Lesson Overview for Parents (What are the kids learning?)" rows="3" style="white-space: pre-wrap; font-family: inherit;"></textarea>
+        <div class="sub-grid">
+            <input type="text" id="cc-lesson" placeholder="Lesson Material Link">
+            <input type="text" id="cc-photo" placeholder="Google Photos Link">
+        </div>
+        <label class="check-label"><input type="checkbox" id="cc-filled"> Reserved</label>
+        <div class="modal-actions">
+            <button class="btn-cancel" onclick="closeModal('cc-modal')">Cancel</button>
+            <button id="btn-save-cc" class="push-btn bg-cyan" style="width: auto; padding: 10px 20px;">Save Spot</button>
+        </div>
+    </div>
+</div>
+
+<div id="ev-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-content" style="border-top: 4px solid #fb923c; max-width: 600px;">
+        <h3>➕ Add / Edit Event</h3>
+        <input type="hidden" id="ev-id">
+        <input type="text" id="ev-title" placeholder="Unique Title">
+        <div class="sub-grid">
+            <input type="date" id="ev-date" required>
+            <div style="display: flex; gap: 5px; align-items: center; justify-content: space-between;">
+                <input type="time" id="ev-time-start" required style="margin-bottom: 0;">
+                <span style="color: #94a3b8; font-weight: bold;">to</span>
+                <input type="time" id="ev-time-end" style="margin-bottom: 0;">
+            </div>
+        </div>
+        <textarea id="ev-desc" placeholder="Message Notes & Key Points (Use line breaks to separate paragraphs)" rows="6" style="white-space: pre-wrap; font-family: inherit;"></textarea>
+        <div class="sub-grid">
+            <input type="text" id="ev-photo" placeholder="Google Photos Link">
+            <input type="text" id="ev-brochure" placeholder="Brochure Link">
+            <input type="text" id="ev-handout" placeholder="Handout Link">
+            <input type="text" id="ev-leader" placeholder="Leader Packet Link">
+        </div>
+        <div class="checkbox-row" style="margin-top: 10px;">
+            <label><input type="checkbox" id="ev-high"> Highlight Event</label>
+        </div>
+        <div class="modal-actions" style="margin-top: 15px;">
+            <button class="btn-cancel" onclick="closeModal('ev-modal')">Cancel</button>
+            <button id="btn-save-event" class="push-btn bg-orange" style="width: auto; padding: 10px 20px;">Save Event</button>
+        </div>
+    </div>
+</div>
+
+<div id="les-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-content" style="border-top: 4px solid #38bdf8;">
+        <h3>➕ Add / Edit Lesson</h3>
+        <div class="sub-grid">
+            <div>
+                <label style="color:#94a3b8;font-size:0.8rem;margin-bottom:4px;display:block;">Start Date</label>
+                <input type="date" id="les-start-date" required>
+            </div>
+            <div>
+                <label style="color:#94a3b8;font-size:0.8rem;margin-bottom:4px;display:block;">End Date</label>
+                <input type="date" id="les-end-date" required>
+            </div>
+        </div>
+        <input type="text" id="les-title" placeholder="Title">
+        <input type="text" id="les-scripture" placeholder="Scripture Focus">
+        <input type="text" id="les-youtube" placeholder="YouTube Link or ID">
+        <textarea id="les-desc" placeholder="Family Discussion Questions & Notes" rows="4" style="white-space: pre-wrap; font-family: inherit;"></textarea>
+        <div class="modal-actions">
+            <button class="btn-cancel" onclick="closeModal('les-modal')">Cancel</button>
+            <button id="btn-save-lesson" class="push-btn bg-blue" style="width: auto; padding: 10px 20px;">Post Lesson</button>
+        </div>
+    </div>
+</div>
+
+<div id="opp-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-content" style="border-top: 4px solid #a855f7; max-width: 500px;">
+        <h3>➕ Add / Edit Volunteer Role</h3>
+        <input type="hidden" id="opp-id">
+        
+        <input type="text" id="opp-title" placeholder="Role Title (e.g. Small Group Leader)">
+        <textarea id="opp-desc" placeholder="Description of responsibilities and expectations..." rows="3"></textarea>
+        
+        <p style="color: #94a3b8; font-size: 0.85rem; margin: 10px 0 5px 0;">Custom Application Questions (Enter one per line)</p>
+        <textarea id="opp-questions" placeholder="e.g. Why do you want to serve here?&#10;What is your availability?" rows="3" style="white-space: pre-wrap; font-family: inherit; margin-bottom: 15px;"></textarea>
+
+        <p style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 5px;">Display this opportunity to:</p>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px;">
+            <label class="check-label"><input type="checkbox" id="opp-parents"> Parents</label>
+            <label class="check-label"><input type="checkbox" id="opp-students"> Students</label>
+            <label class="check-label"><input type="checkbox" id="opp-leaders"> Leaders</label>
+            <label class="check-label"><input type="checkbox" id="opp-helpers"> Helpers</label>
+        </div>
+
+        <label class="check-label" style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
+            <input type="checkbox" id="opp-active"> Status: Active (Currently Recruiting)
+        </label>
+        
+        <div class="modal-actions" style="margin-top: 15px;">
+            <button class="btn-cancel" onclick="closeModal('opp-modal')">Cancel</button>
+            <button id="btn-save-opp" class="push-btn" style="background: #a855f7; color: white; width: auto; padding: 10px 20px;">Save Role</button>
+        </div>
+    </div>
+</div>
+
+<div id="view-details-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-content" style="border-top: 4px solid #10b981; max-width: 600px;">
+        <h3 id="view-details-title" style="margin: 0 0 15px 0; color: #f8fafc;">🔗 Details</h3>
+        
+        <div id="links-section">
+            <h4 style="color: #10b981; margin-bottom: 5px;">Attached Resources</h4>
+            <div id="view-links-container" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;"></div>
+        </div>
+
+        <h4 id="apps-header" style="color: #10b981; margin-bottom: 5px; display: none;">Received Applications</h4>
+        <div id="view-apps-container" style="display: none; flex-direction: column; gap: 10px; max-height: 250px; overflow-y: auto; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 20px;"></div>
+
+        <div id="feedback-section">
+            <h4 style="color: #a855f7; margin-bottom: 5px;">Submitted Feedback</h4>
+            <div id="view-feedback-container" style="display: flex; flex-direction: column; gap: 10px; max-height: 250px; overflow-y: auto; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);"></div>
+        </div>
+        
+        <div class="modal-actions" style="margin-top: 20px;">
+            <button class="btn-cancel" onclick="closeModal('view-details-modal')" style="width: 100%;">Close</button>
+        </div>
+    </div>
+</div>
+
+<div id="food-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-content" style="border-top: 4px solid #f59e0b;">
+        <h3>➕ Add / Edit Food Spot</h3>
+        <input type="hidden" id="food-id">
+        <div class="sub-grid">
+            <input type="date" id="food-date" required>
+            <input type="text" id="food-needed" placeholder="What's needed? (e.g. 10 Pizzas or 'Anything')">
+        </div>
+        <input type="text" id="food-name" placeholder="Volunteer Name (if claimed)">
+        <div class="sub-grid" style="margin-top: 10px;">
+            <input type="text" id="food-served" placeholder="What was actually served?">
+            <input type="text" id="food-feedback" placeholder="Feedback (e.g. Need more drinks next time)">
+        </div>
+        <label class="check-label"><input type="checkbox" id="food-filled"> Reserved / Filled</label>
+        <div class="modal-actions">
+            <button class="btn-cancel" onclick="closeModal('food-modal')">Cancel</button>
+            <button id="btn-save-food" class="push-btn" style="background: #f59e0b; color: #0f172a; width: auto; padding: 10px 20px;">Save Spot</button>
+        </div>
+    </div>
+</div>
+
+<style is:global>
+    input[type="date"]::-webkit-calendar-picker-indicator, input[type="time"]::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }
+    input, textarea { width: 100%; padding: 12px; background: #0f172a; border: 1px solid #334155; color: white; border-radius: 8px; font-family: inherit; box-sizing: border-box; margin-bottom: 10px; }
+    textarea { resize: vertical; margin-bottom: 0; }
+    input:focus, textarea:focus { outline: none; border-color: #ef4444; }
+    .sub-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+    .sub-grid input { margin-bottom: 0; }
+    .checkbox-row, .check-label { display: flex; gap: 12px; color: #94a3b8; font-size: 0.85rem; align-items: center; cursor: pointer; }
+    .push-btn { border: none; padding: 14px; border-radius: 8px; cursor: pointer; font-weight: bold; color: #0f172a; font-size: 1rem; width: 100%; transition: opacity 0.2s; }
+    .push-btn:hover { opacity: 0.9; }
+    .bg-cyan { background: #06b6d4; } .bg-orange { background: #fb923c; } .bg-blue { background: #38bdf8; }
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(5px); z-index: 10000; align-items: center; justify-content: center; padding: 1rem; box-sizing: border-box; animation: fadeIn 0.2s ease-out; }
+    .modal-content { background: #1e293b; border: 1px solid rgba(255,255,255,0.1); padding: 2rem; border-radius: 16px; width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 50px rgba(0,0,0,0.8); display: flex; flex-direction: column; }
+    .modal-content h3 { margin: 0 0 15px 0; font-size: 1.5rem; }
+    .modal-actions { display: flex; justify-content: flex-end; gap: 15px; margin-top: 15px; }
+    .btn-cancel { background: transparent; border: 1px solid #475569; color: #cbd5e1; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: all 0.2s; }
+    .btn-cancel:hover { background: rgba(255,255,255,0.1); color: white; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+</style>
