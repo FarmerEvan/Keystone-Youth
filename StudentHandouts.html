@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Handouts - The Plagues</title>
+    <style>
+        /* Base Print Styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f1f5f9;
+            color: #0f172a;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Print Page Setup (Changed to Landscape) */
+        @page {
+            size: letter landscape;
+            margin: 0.5in;
+        }
+
+        .page {
+            background: white;
+            width: 11in; /* Swapped width and height for landscape */
+            height: 8.5in;
+            margin: 20px auto;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            box-sizing: border-box;
+            display: flex; /* This places the two halves side-by-side */
+            flex-direction: row;
+        }
+
+        @media print {
+            body { background: white; margin: 0; }
+            .page { margin: 0; box-shadow: none; width: 11in; height: 8.5in; }
+        }
+
+        /* --- HANDOUT: SIDE-BY-SIDE DESIGN --- */
+        .half-page {
+            width: 50%; /* Each takes up half the width */
+            height: 100%;
+            padding: 0.4in;
+            box-sizing: border-box;
+            border-right: 2px dashed #94a3b8; /* Cut line down the middle */
+        }
+        .half-page:last-child {
+            border-right: none;
+        }
+        
+        .handout-header {
+            text-align: center;
+            border-bottom: 2px solid #0284c7; 
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        .handout-header h2 { margin: 0; color: #1e293b; font-size: 22px; text-transform: uppercase;}
+        .handout-header p { margin: 5px 0 0 0; color: #64748b; font-size: 14px; font-style: italic;}
+
+        .section-title {
+            font-weight: bold;
+            font-size: 16px;
+            color: #ea580c; 
+            margin-top: 15px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .question {
+            font-size: 13px;
+            margin-bottom: 6px;
+            line-height: 1.4;
+            font-weight: 600;
+        }
+        .write-lines {
+            border-bottom: 1px solid #cbd5e1;
+            height: 18px;
+            margin-bottom: 8px;
+            width: 100%;
+        }
+
+        .action-box {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-left: 4px solid #ea580c;
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-top: 10px;
+            line-height: 1.4;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="page">
+        
+        <div class="half-page">
+            <div class="handout-header">
+                <h2>The Plagues</h2>
+                <p>Message Notes & Discussion Guide | Exodus 4-11</p>
+            </div>
+
+            <div class="section-title">📝 Record It</div>
+            <div class="write-lines"></div>
+            <div class="write-lines"></div>
+            <div class="write-lines"></div>
+            <div class="write-lines"></div>
+
+            <div class="section-title">🗣️ Discuss It</div>
+            <div class="question">1. When Moses first obeyed God, things actually got worse for the Israelites (they lost their straw). Has doing the right thing ever made your life harder at first? How do you keep trusting God?</div>
+            <div class="write-lines"></div>
+            <div class="write-lines"></div>
+
+            <div class="question">2. Even Pharaoh's magicians admitted, "This is the finger of God" (Exodus 8:19). His own advisors knew they were beat! Why do you think Pharaoh still refused to listen?</div>
+            <div class="write-lines"></div>
+            <div class="write-lines"></div>
+
+            <div class="question">3. Pharaoh tried to compromise with Moses (e.g., "Go worship, but leave your flocks behind"). What are some ways we try to "compromise" with God today by holding parts of our life back?</div>
+            <div class="write-lines"></div>
+            <div class="write-lines"></div>
+
+            <div class="section-title">🚀 Do It (Weekly Action Steps)</div>
+            <div class="action-box">
+                <strong>1. Check Your Heart:</strong> Is there an area of your heart that has grown stubborn or hard toward God? (A grudge, a rule you keep breaking, a warning you are ignoring). Pray Psalm 139:23-24 and ask God to soften it.<br><br>
+                <strong>2. No Compromise:</strong> Identify one area of your life you have left back in "Egypt" (your money, media, relationships). Make a commitment to bring 100% of your life under God's authority this week!
+            </div>
+        </div>
+
+        <div class="half-page">
+            <div class="handout-header">
+                <h2>The Plagues</h2>
+                <p>Message Notes & Discussion Guide | Exodus 4-11</p>
+            </div>
+
+            <div class="section-title">📝 Record It</div>
+            <div class="write-lines"></div>
+            <div class="write-lines"></div>
+            <div class="write-lines"></div>
+            <div class="write-lines"></div>
+
+            <div class="section-title">🗣️ Discuss It</div>
+            <div class="question">1. When Moses first obeyed God, things actually got worse for the Israelites (they lost their straw). Has doing the right thing ever made your life harder at first? How do you keep trusting God?</div>
+            <div class="write-lines"></div>
+            <div class="write-lines"></div>
+
+            <div class="question">2. Even Pharaoh's magicians admitted, "This is the finger of God" (Exodus 8:19). His own advisors knew they were beat! Why do you think Pharaoh still refused to listen?</div>
+            <div class="write-lines"></div>
+            <div class="write-lines"></div>
+
+            <div class="question">3. Pharaoh tried to compromise with Moses (e.g., "Go worship, but leave your flocks behind"). What are some ways we try to "compromise" with God today by holding parts of our life back?</div>
+            <div class="write-lines"></div>
+            <div class="write-lines"></div>
+
+            <div class="section-title">🚀 Do It (Weekly Action Steps)</div>
+            <div class="action-box">
+                <strong>1. Check Your Heart:</strong> Is there an area of your heart that has grown stubborn or hard toward God? (A grudge, a rule you keep breaking, a warning you are ignoring). Pray Psalm 139:23-24 and ask God to soften it.<br><br>
+                <strong>2. No Compromise:</strong> Identify one area of your life you have left back in "Egypt" (your money, media, relationships). Make a commitment to bring 100% of your life under God's authority this week!
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>

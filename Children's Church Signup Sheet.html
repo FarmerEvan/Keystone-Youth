@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Children's Church Sign-Up | Keystone</title>
+    <style>
+        /* Base Styles */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            color: #ffffff;
+            min-height: 100vh;
+        }
+
+        .container { max-width: 800px; margin: 0 auto; padding: 2rem; }
+
+        /* Navigation */
+        .nav { margin-bottom: 2rem; }
+        .nav a { color: #94a3b8; text-decoration: none; transition: color 0.3s; }
+        .nav a:hover { color: #06b6d4; }
+
+        /* Header */
+        .header { text-align: center; margin-bottom: 3rem; }
+        .header h1 { font-size: 2.8rem; color: #06b6d4; margin: 0 0 10px 0; }
+        .header p { color: #cbd5e1; font-size: 1.1rem; line-height: 1.5; max-width: 600px; margin: 0 auto; }
+
+        /* Calendar Card */
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Date Rows */
+        .date-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid #06b6d4;
+            transition: transform 0.2s;
+        }
+        .date-row:hover { transform: translateX(5px); }
+        
+        .date-row.filled {
+            border-left-color: #475569;
+            opacity: 0.6;
+        }
+
+        .date-info h3 { margin: 0 0 5px 0; color: #f8fafc; font-size: 1.2rem; }
+        .date-info p { margin: 0; color: #94a3b8; font-size: 0.9rem; }
+
+        /* Buttons */
+        .btn {
+            background: #06b6d4;
+            color: #0f172a;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        .btn:hover { background: #0891b2; }
+        
+        .btn-filled {
+            background: transparent;
+            border: 1px solid #475569;
+            color: #94a3b8;
+            cursor: not-allowed;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+
+        @media (max-width: 600px) {
+            .date-row { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .btn, .btn-filled { width: 100%; text-align: center; box-sizing: border-box; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="nav">
+            <a href="parent.html">← Back to Parent Hub</a>
+        </div>
+
+        <div class="header">
+            <h1>Children's Church Sign-Up</h1>
+            <p>Thank you for serving our kids! Please select a Sunday below to reserve your date. We ask volunteers to commit to once per month if possible.</p>
+        </div>
+
+        <div class="card">
+
+            <div class="date-row-filled">
+                <div class="date-info">
+                    <h3>Sunday, April 26</h3>
+                    <p>11:00 AM Service • Lorie Johnson</p>
+                <div>
+                <a href="#"
+                 class="btn-filled">Reserved</a>
+            </div>
+            
+            <div class="date-row filled">
+                <div class="date-info">
+                    <h3>Sunday, May 3</h3>
+                    <p>11:00 AM Service • Stephanie Lee</p>
+                </div>
+                <a href="#" class="btn-filled">Reserved</a>
+            </div>
+
+            <div class="date-row filled">
+                <div class="date-info">
+                    <h3>Sunday, May 10</h3>
+                    <p>11:00 AM Service • Staffed by Evan</p>
+                </div>
+                <a href="#" class="btn-filled">Reserved</a>
+            </div>
+
+            <div class="date-row">
+                <div class="date-info">
+                    <h3>Sunday, May 17</h3>
+                    <p>11:00 AM Service • Need 1 Volunteer</p>
+                </div>
+                <a href="mailto:evanbrandsma@gmail.com?subject=Childrens Church Sign-up: May 17" class="btn">Reserve Date</a>
+            </div>
+
+            <div class="date-row">
+                <div class="date-info">
+                    <h3>Sunday, May 24</h3>
+                    <p>11:00 AM Service • Need 1 Volunteers</p>
+                </div>
+                <a href="mailto:evanbrandsma@gmail.com?subject=Childrens Church Sign-up: May 24" class="btn">Reserve Date</a>
+            </div>
+
+            <div class="date-row">
+                <div class="date-info">
+                    <h3>Sunday, May 31</h3>
+                    <p>11:00 AM Service • Need 1 Volunteers</p>
+                </div>
+                <a href="mailto:evanbrandsma@gmail.com?subject=Childrens Church Sign-up: May 31" class="btn">Reserve Date</a>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

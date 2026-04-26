@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parent Hub | Keystone Youth</title>
+    <style>
+        /* Base Styles */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            color: #ffffff;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Navigation */
+        .nav {
+            margin-bottom: 2rem;
+        }
+        .nav a {
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 1rem;
+            transition: color 0.3s ease;
+        }
+        .nav a:hover {
+            color: #10b981; /* Green accent for parents */
+        }
+
+        /* Header & Parent Verse */
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        .header h1 {
+            font-size: 3rem;
+            color: #10b981;
+            margin: 0 0 1rem 0;
+        }
+        
+        .memory-verse {
+            background: rgba(16, 185, 129, 0.1);
+            border-left: 4px solid #10b981;
+            padding: 1.5rem;
+            border-radius: 0 12px 12px 0;
+            max-width: 700px;
+            margin: 0 auto;
+            text-align: left;
+        }
+        .memory-verse h3 {
+            color: #10b981;
+            margin: 0 0 10px 0;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .memory-verse p {
+            font-size: 1.2rem;
+            font-style: italic;
+            margin: 0 0 10px 0;
+            line-height: 1.6;
+        }
+        .memory-verse .reference {
+            font-size: 1rem;
+            font-weight: bold;
+            color: #cbd5e1;
+            text-align: right;
+            margin: 0;
+        }
+
+        /* Grid Layout for Cards */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        /* Card Styles */
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+        }
+        .card h2 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 0;
+            color: #f8fafc;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 10px;
+        }
+
+        /* Specific Elements within Cards */
+        .highlight-box {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid #10b981;
+        }
+
+        .event-date {
+            color: #10b981;
+            font-weight: bold;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+
+        .list-items {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .list-items li {
+            background: rgba(255, 255, 255, 0.05);
+            margin-bottom: 10px;
+            padding: 12px;
+            border-radius: 8px;
+        }
+
+        /* HTML Folders (Details/Summary tags) */
+        details {
+            background: rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+        }
+        details[open] {
+            background: rgba(0, 0, 0, 0.3);
+            padding-bottom: 15px;
+        }
+        summary {
+            cursor: pointer;
+            font-weight: bold;
+            color: #34d399; /* Lighter green */
+            font-size: 1.05rem;
+            outline: none;
+            display: flex;
+            align-items: center;
+        }
+        summary::before {
+            content: '📁 ';
+            margin-right: 8px;
+            font-size: 1.2rem;
+        }
+        details[open] summary::before {
+            content: '📂 ';
+        }
+        .folder-content {
+            margin-top: 15px;
+            padding-left: 10px;
+            border-left: 2px solid #34d399;
+            font-size: 0.9rem;
+            color: #cbd5e1;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-block;
+            background: #10b981;
+            color: #0f172a;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            text-align: center;
+            transition: background 0.3s;
+            margin-top: auto;
+        }
+        .btn:hover {
+            background: #059669;
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 600px) {
+            .header h1 { font-size: 2.5rem; }
+            .memory-verse p { font-size: 1.1rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="nav">
+            <a href="index.html">← Back to Home</a>
+        </div>
+
+        <div class="header">
+            <h1>Parent Hub</h1>
+            
+            <div class="memory-verse">
+                <h3>Partnering in Discipleship</h3>
+                <p>"These commandments that I give you today are to be on your hearts. Impress them on your children. Talk about them when you sit at home and when you walk along the road..."</p>
+                <p class="reference">- Deuteronomy 6:6-7</p>
+            </div>
+        </div>
+
+        <div class="grid">
+            
+            <div class="card">
+                <h2>📖 Family Discipleship</h2>
+                <p>Follow along with what we are learning on Sunday nights and bring the conversation home.</p>
+                
+                <div class="highlight-box">
+                    <h3 style="margin: 0 0 5px 0; color: #fff;">Current: The Great "I AM"</h3>
+                    <p style="margin: 0; font-size: 0.9rem; color: #cbd5e1;">Read Exodus 3:13-15 together. Ask your child: "Moses was scared to do what God asked. When has God asked you to do something difficult, and how does knowing He is 'I AM' help?"</p>
+                </div>
+
+                <a href="Brochures for Students/" class="btn" style="margin-top: 15px;">Download This Week's Brochure</a>
+            </div>
+
+            <div class="card">
+                <h2>🤝 Serve With Us</h2>
+                <p>It takes a village! See our current needs and how you can jump in to help our ministry thrive.</p>
+                
+                <ul class="list-items">
+                    <li>
+                        <strong>🚗 Children's Church:</strong> We would like for our volunteers to commit to a regular schedule of once per month or quarter. <p> We would also appreciate knowing who would be willing to jump in if we have a gap.</p> <p>Please contact Evan if you are interested!</p>
+                    </li>
+                    <li> 
+                        <strong>👧 Youth Group Girls Leader: </strong> We are looking for a passionate female leader who would be willing to attend youth group weekly (preferred) at least regularly, to lead a small group during youth nights. Please contact Evan for more details. 
+                    </li>
+                </ul>
+
+                <details>
+                    <summary>Ongoing Volunteer Roles</summary>
+                    <div class="folder-content">
+                        <li>
+                            <strong>Food Coordinator:</strong> We are thankful for Genie Wall as she has taken charge of ensuring Keystone Youth has food provided each week by someone in the Church. <p> Genie is seeking helpers to provide food for Youth Group at least once every other month.</p>
+                        </li>
+                    </div>
+                </details>
+                
+                <a href="" class="btn" style="margin-top: 15px;">Click Here to Apply</a>
+            </div>
+
+            <div class="card">
+                <h2>📅 Parent Info & Events</h2>
+                <p>Key dates, drop-off times, and upcoming events for your family calendar.</p>
+                
+                <div class="highlight-box" style="border-left-color: #f59e0b;">
+                    <div class="event-date" style="color: #f59e0b;">Sundays @ 5:00 PM - 6:30 PM</div>
+                    <h3 style="margin: 5px 0; color: #fff;">Weekly Youth Group</h3>
+                    <p style="margin: 0; font-size: 0.9rem; color: #cbd5e1;">Dinner is provided! Drop-off and pick-up at the main student center doors.</p>
+                    <p style="margin: 1; font-size: 0.9rem; color: #cbd5e1;">Doors open at 4:45pm</p>
+                </div>
+                
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>
